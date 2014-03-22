@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Built-By: Eduardo.Guillen
+Build-Jdk: 1.6.0_45
+Class-Path: dropwizard-core-0.6.2.jar jersey-core-1.17.1.jar jersey-se
+ rver-1.17.1.jar asm-3.1.jar jersey-servlet-1.17.1.jar metrics-core-2.
+ 2.0.jar metrics-servlet-2.2.0.jar metrics-jetty-2.2.0.jar metrics-log
+ back-2.2.0.jar metrics-jersey-2.2.0.jar metrics-annotation-2.2.0.jar 
+ jackson-databind-2.1.4.jar jackson-annotations-2.1.4.jar jackson-core
+ -2.1.4.jar jackson-jaxrs-json-provider-2.1.4.jar jackson-module-jaxb-
+ annotations-2.1.4.jar jackson-dataformat-yaml-2.1.4.jar jackson-datat
+ ype-guava-2.1.2.jar argparse4j-0.4.0.jar slf4j-api-1.7.4.jar jul-to-s
+ lf4j-1.7.4.jar logback-core-1.0.10.jar logback-classic-1.0.10.jar log
+ 4j-over-slf4j-1.7.4.jar jetty-server-8.1.10.v20130312.jar javax.servl
+ et-3.0.0.v201112011016.jar jetty-servlet-8.1.10.v20130312.jar jetty-s
+ ecurity-8.1.10.v20130312.jar jetty-http-8.1.10.v20130312.jar jetty-io
+ -8.1.10.v20130312.jar guava-14.0.1.jar jsr305-2.0.1.jar hibernate-val
+ idator-4.3.1.Final.jar validation-api-1.0.0.GA.jar jboss-logging-3.1.
+ 0.CR2.jar joda-time-2.2.jar jackson-datatype-joda-2.1.2.jar log4j-1.2
+ .17.jar jetty-servlets-8.1.10.v20130312.jar jetty-continuation-8.1.10
+ .v20130312.jar jetty-client-8.1.10.v20130312.jar jetty-util-8.1.10.v2
+ 0130312.jar
+Main-Class: es.uned.epardo30.bubbleend.BubbleEndPointService
+Created-By: Maven Integration for Eclipse
+
