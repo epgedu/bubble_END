@@ -58,7 +58,7 @@ public class BubbleEndPointResource {
      * 
      * @return boolean
      */
-    
+    @GET
     public boolean ping(){
     	logger.debug("calling ping() method...");
 		return true;
@@ -71,10 +71,12 @@ public class BubbleEndPointResource {
      * @exception WebApplicationException Exception is thrown from workflowEngine() method. No exception can be thrown
      * from searchBubble() because all process is executed on BubbbleEngine class.   
      */
-    @GET
-    public RetticuleDto searchBubbles() {
+    @POST
+    public RetticuleDto searchBubbles(@FormParam("text-filter") String textFilter) {
     	
     	logger.debug("calling searchBubbles() method...");
+    	logger.debug("Text filter: "+textFilter);
+    	
     	/* We need to call to bubble engine. We create a new instance of BubbleEngine for each request.
     	 * We don't need to manage user session, therefore we open a new BubbleEngine when we receive a
     	 * new request and when the service finishes, we will kill the instance. 
@@ -84,6 +86,7 @@ public class BubbleEndPointResource {
     		bubbleEngine = new BubbleEngine();
         	bubbleEngine.workflowEngine();
         	
+        	logger.debug("Returning retticulo...");
         	return new RetticuleDto();
     	}
     	catch(WebApplicationException webApplicationException) {

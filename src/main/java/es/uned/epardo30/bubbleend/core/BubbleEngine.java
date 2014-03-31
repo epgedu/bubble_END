@@ -75,7 +75,7 @@ public class BubbleEngine {
 		//llamamos al cliente del servicio AFC, obteniedo el XML como resultado
 		try {
 			
-			//int i = 5 / 0;
+			int i = 5 / 0;
 		}
 		catch(Exception exception) {
 			logger.error("Exception on callToAfcClient() method: ", exception);
