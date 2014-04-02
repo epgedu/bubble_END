@@ -1,5 +1,8 @@
 package es.uned.epardo30.bubbleend.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Our service needs to conform to an industry standard, RFC 1149, which specifies the following JSON representation:
  * { "id": 1,
@@ -18,18 +21,24 @@ package es.uned.epardo30.bubbleend.dto;
  * @author Eduardo.Guillen
  *
  */
-public class RetticuleDto {
+public class LatticeDto {
 	
-	private long id = 1;
-	private String content = "test";
+	List<FormalConceptDto> contentObjects = new ArrayList<FormalConceptDto>();
 
-    
-	public long getId() {
-		return id;
-    }
+	public List<FormalConceptDto> getContentObjects() {
+		return contentObjects;
+	}
 
-    public String getContent() {
-        return content;
-    }
+	public void setContentObjects(List<FormalConceptDto> contentObjects) {
+		this.contentObjects = contentObjects;
+	}
+	
+	@Override
+	public String toString() {
+		return "LatticeDto [contentObjects="
+							+this.contentObjects	
+							+"]";
+	}
+	
 	
 }

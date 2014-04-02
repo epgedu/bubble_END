@@ -2,7 +2,7 @@ package es.uned.epardo30.bubbleend.resources;
 
 import es.uned.epardo30.bubbleend.BubbleEndPointService;
 import es.uned.epardo30.bubbleend.core.BubbleEngine;
-import es.uned.epardo30.bubbleend.dto.RetticuleDto;
+import es.uned.epardo30.bubbleend.dto.LatticeDto;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -72,7 +72,7 @@ public class BubbleEndPointResource {
      * from searchBubble() because all process is executed on BubbbleEngine class.   
      */
     @POST
-    public RetticuleDto searchBubbles(@FormParam("text-filter") String textFilter) {
+    public LatticeDto searchBubbles(@FormParam("text-filter") String textFilter) {
     	
     	logger.debug("calling searchBubbles() method...");
     	logger.debug("Text filter: "+textFilter);
@@ -84,11 +84,8 @@ public class BubbleEndPointResource {
     	 */
     	try {
     		bubbleEngine = new BubbleEngine();
-        	bubbleEngine.workflowEngine();
-        	
-        	logger.debug("Returning retticulo...");
-        	return new RetticuleDto();
-    	}
+    		return bubbleEngine.workflowEngine();
+        }
     	catch(WebApplicationException webApplicationException) {
     		logger.error("Exception on searchBubble. Status response: "+webApplicationException.getResponse().getStatus());
     		throw webApplicationException;
