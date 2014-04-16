@@ -92,6 +92,22 @@
         	<artifactId>dropwizard-core</artifactId>
         	<version>0.6.2</version>
       </dependency>
+      
+      <!-- Dropwizard external resources-->
+      <dependency>
+			<groupId>com.yammer.dropwizard</groupId>
+			<artifactId>dropwizard-client</artifactId>
+			<version>0.6.2</version>
+	  </dependency>
+	  
+      <!-- json -->
+      <dependency>
+		<groupId>org.json</groupId>
+		<artifactId>json</artifactId>
+		<version>20140107</version>
+	  </dependency>
+            
+	            
   
       <!-- Log4j -->
       <dependency>

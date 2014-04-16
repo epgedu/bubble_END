@@ -1,7 +1,7 @@
 package es.uned.epardo30.bubbleend.resources;
 
-import es.uned.epardo30.bubbleend.BubbleEndPointService;
 import es.uned.epardo30.bubbleend.core.BubbleEngine;
+import es.uned.epardo30.bubbleend.core.clients.goggle.GoogleClient;
 import es.uned.epardo30.bubbleend.dto.LatticeDto;
 
 import javax.ws.rs.FormParam;
@@ -9,7 +9,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
@@ -52,8 +51,19 @@ public class BubbleEndPointResource {
 	
 	//private final String template;
     private BubbleEngine bubbleEngine;
+    
+    //google client dependence
+    private final GoogleClient googleClient;
 
-    /**
+    public BubbleEndPointResource(GoogleClient googleClient) {
+    	this.googleClient = googleClient;
+    }
+    
+    public GoogleClient getGoogleClient() {
+		return googleClient;
+	}
+
+	/**
      * Called method when the request to /search-bubble is GET
      * 
      * @return boolean
@@ -84,7 +94,7 @@ public class BubbleEndPointResource {
     	 */
     	try {
     		bubbleEngine = new BubbleEngine();
-    		return bubbleEngine.workflowEngine();
+    		return bubbleEngine.workflowEngine(textFilter, googleClient);
         }
     	catch(WebApplicationException webApplicationException) {
     		logger.error("Exception on searchBubble. Status response: "+webApplicationException.getResponse().getStatus());

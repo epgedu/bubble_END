@@ -1,53 +1,64 @@
 package es.uned.epardo30.bubbleend.core;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import es.uned.epardo30.bubbleend.BubbleEndPointService;
+import es.uned.epardo30.bubbleend.core.clients.goggle.GoogleClient;
 import es.uned.epardo30.bubbleend.dto.ContentDescriptorDto;
 import es.uned.epardo30.bubbleend.dto.ContentObjectDto;
 import es.uned.epardo30.bubbleend.dto.FormalConceptDto;
 import es.uned.epardo30.bubbleend.dto.LatticeDto;
+import es.uned.epardo30.bubbleend.dto.clients.google.ItemGoogleDto;
+import es.uned.epardo30.bubbleend.dto.clients.google.ResultsGoogleDto;
 import es.uned.epardo30.bubbleend.exceptions.InternalServerException;
-
 
 public class BubbleEngine {
 	
 	static Logger logger = Logger.getLogger(BubbleEngine.class);
 	
-	public LatticeDto workflowEngine() {
+	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient) {
 		//llamaremos al local method callToGoogleClient
 		//este nos devuelve un xml el cual tiene que ser procesadoo para obtener los descriptores y devuelve la entrada al AFC
 		//llamamos al local method callToAfcClient
 		//llamamos al metodo que procesa el XML de salida del AFC para quedarnos con la informacion que necesitamos y contruir el objeto Searching,
 		//que es el objeto JSON que pasaremos a la interface. 
 		
-		
-			this.callToGoogleClient();
-			this.processGoogleOut();
-			this.callTextalyticsProcess();
+			logger.debug("Initializing workflowEngine...");
+			JSONObject googleResultJson = this.callToGoogleClient(googleClient, textSearchFilter);
+			ResultsGoogleDto resultsGoogleDto = this.processGoogleOut(googleResultJson);
+			this.callTextalyticsProcess(resultsGoogleDto);
 			this.createAfcIn();
 			File xmlFile = this.callToAfcClient();
 			return this.processAfcOut(xmlFile);
 		
 	}
 	
-	private void callToGoogleClient() {
+	/**
+	 * Calling google client to get the result in json format.
+	 * 
+	 * @param googleClient
+	 * @param textSearchFilter
+	 * @return
+	 */
+	private JSONObject callToGoogleClient(GoogleClient googleClient, String textSearchFilter) {
 		//llamaremos al servicio resources.GoogleClient
 		try {
-			//int i = 6/0;
+			logger.debug("BubbleEngine.CallToGoogleClient()...");
+			return googleClient.getResource(textSearchFilter);
 		}
 		catch(Exception exception) {
 			logger.error("Exception on callToGoogleClient() method: ", exception);
@@ -56,10 +67,41 @@ public class BubbleEngine {
 	
 	}
 	
-	
-	private void processGoogleOut() {
-		//procesamos el xml de salida del servicio de busqueda, para obtener los descriptores. Devuelve el xml de entrada a AFC
+	/**
+	 * Process json object in order to get the input for syntactic scanner 
+	 * @param googleResultJson
+	 * @return 
+	 */
+	public ResultsGoogleDto processGoogleOut(JSONObject googleResultJson) {
 		try {
+			logger.debug("BubbleEngine.processGoogleOut...");
+			//init dto structure
+			ResultsGoogleDto resultsGoogleDto = new ResultsGoogleDto(new ArrayList<ItemGoogleDto>());
+			
+			//read the json from google service search
+			JSONArray items = (JSONArray) googleResultJson.get("itmes");
+			//process every item
+			Iterator<JSONObject> itemsJson = ((List<JSONObject>) items).iterator();
+			String title;
+			String htmlFormattedUrl;
+			String snnipet;
+			String description;
+			while (itemsJson.hasNext()) {
+				JSONObject item = itemsJson.next();
+				//saved the item title
+				title = item.getString("title");
+				//save the url
+				htmlFormattedUrl = item.getString("formattedUrl");
+				//save the snnipet
+				snnipet = item.getString("snippet");
+				//save the description
+				description = item.getString("description");
+				
+				//saved the data on dto results
+				resultsGoogleDto.getItemsGoogleDto().add(new ItemGoogleDto(title, htmlFormattedUrl, snnipet, description));
+			}
+			
+			return resultsGoogleDto;
 		}
 		catch(Exception exception) {
 			logger.error("Exception on processGoogleOut() method: ", exception);
@@ -67,8 +109,25 @@ public class BubbleEngine {
 		}
 	}
 	
-	public void callTextalyticsProcess() {
+	/**
+	 * For each result saved on ResultGoogleDto object, we call to textAlytics services in order to get the attributes or descriptors for each one. 
+	 * @param resultsGoogleDto
+	 */
+	public void callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto) {
 		try {
+			logger.debug("BubbleEngine.callTextalyticsProcess");
+			ItemGoogleDto item;
+			String textToSend;
+			for (int i = 0; i < resultsGoogleDto.getItemsGoogleDto().size(); i++) {
+				item = resultsGoogleDto.getItemsGoogleDto().get(i);
+				//join the tittle, snnipet and description
+				textToSend = item.getTitle()+" "+item.getSnnipet()+" "+item.getDescription();
+				logger.debug("text to send to TextAlytics: "+textToSend);
+				//call the textAlytics service
+				
+				//process the textAlytics response
+			}
+			
 		}
 		catch(Exception exception) {
 			logger.error("Exception on callTextalyticsProcess() method: ", exception);
