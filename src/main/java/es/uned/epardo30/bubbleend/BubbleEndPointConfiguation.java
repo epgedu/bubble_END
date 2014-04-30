@@ -70,6 +70,27 @@ public class BubbleEndPointConfiguation extends Configuration{
 	@NotEmpty
 	private String googleApiKey;
 	
+	@NotEmpty
+	private String textalyticsResourceIp;
+	
+	@NotNull
+	private int textalyticsResourcePort;
+	
+	@NotEmpty
+	private String textalyticsResourceProtocol;
+	
+	@NotEmpty
+	private String textalyticsResourceContext;
+	
+	@NotEmpty
+	private String textalyticsKey;
+	
+	@NotEmpty
+	private String textalyticsLanguage;
+	
+	@NotNull
+	private double textalyticsRelevance;
+	
 	@JsonProperty
 	public String getGoogleResourceIp() {
 		return googleResourceIp;
@@ -168,6 +189,76 @@ public class BubbleEndPointConfiguation extends Configuration{
 	@JsonProperty
 	public void setGoogleResourceContext(String googleResourceContext) {
 		this.googleResourceContext = googleResourceContext;
+	}
+
+	@JsonProperty
+	public String getTextalyticsResourceIp() {
+		return textalyticsResourceIp;
+	}
+
+	@JsonProperty
+	public void setTextalyticsResourceIp(String textalyticsResourceIp) {
+		this.textalyticsResourceIp = textalyticsResourceIp;
+	}
+
+	@JsonProperty
+	public int getTextalyticsResourcePort() {
+		return textalyticsResourcePort;
+	}
+
+	@JsonProperty
+	public void setTextalyticsResourcePort(int textalyticsResourcePort) {
+		this.textalyticsResourcePort = textalyticsResourcePort;
+	}
+
+	@JsonProperty
+	public String getTextalyticsResourceProtocol() {
+		return textalyticsResourceProtocol;
+	}
+
+	@JsonProperty
+	public void setTextalyticsResourceProtocol(String textalyticsResourceProtocol) {
+		this.textalyticsResourceProtocol = textalyticsResourceProtocol;
+	}
+
+	@JsonProperty
+	public String getTextalyticsResourceContext() {
+		return textalyticsResourceContext;
+	}
+
+	@JsonProperty
+	public void setTextalyticsResourceContext(String textalyticsResourceContext) {
+		this.textalyticsResourceContext = textalyticsResourceContext;
+	}
+
+	@JsonProperty
+	public String getTextalyticsKey() {
+		return textalyticsKey;
+	}
+
+	@JsonProperty
+	public void setTextalyticsKey(String textalyticsKey) {
+		this.textalyticsKey = textalyticsKey;
+	}
+
+	@JsonProperty
+	public String getTextalyticsLanguage() {
+		return textalyticsLanguage;
+	}
+
+	@JsonProperty
+	public void setTextalyticsLanguage(String textalyticsLanguage) {
+		this.textalyticsLanguage = textalyticsLanguage;
+	}
+
+	@JsonProperty
+	public double getTextalyticsRelevance() {
+		return textalyticsRelevance;
+	}
+
+	@JsonProperty
+	public void setTextalyticsRelevance(double textalyticsRelevance) {
+		this.textalyticsRelevance = textalyticsRelevance;
 	}
 	
 	

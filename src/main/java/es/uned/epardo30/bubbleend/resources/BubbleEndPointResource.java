@@ -2,6 +2,7 @@ package es.uned.epardo30.bubbleend.resources;
 
 import es.uned.epardo30.bubbleend.core.BubbleEngine;
 import es.uned.epardo30.bubbleend.core.clients.goggle.GoogleClient;
+import es.uned.epardo30.bubbleend.core.clients.textalytics.TextAlyticsClient;
 import es.uned.epardo30.bubbleend.dto.LatticeDto;
 
 import javax.ws.rs.FormParam;
@@ -54,14 +55,26 @@ public class BubbleEndPointResource {
     
     //google client dependence
     private final GoogleClient googleClient;
+    
+    //textAlytics client dependence
+    private final TextAlyticsClient textAlyticsClient;
+    
+    //textAlytics rekevance
+    private double textAlyticsRelevance;
 
-    public BubbleEndPointResource(GoogleClient googleClient) {
+    public BubbleEndPointResource(GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double textAlyticsRelevance) {
     	this.googleClient = googleClient;
+    	this.textAlyticsClient = textAlyticsClient;
+    	this.textAlyticsRelevance = textAlyticsRelevance;
     }
     
     public GoogleClient getGoogleClient() {
 		return googleClient;
 	}
+    
+    public TextAlyticsClient getTextAlyticsClient() {
+    	return textAlyticsClient;
+    }
 
 	/**
      * Called method when the request to /search-bubble is GET
@@ -94,7 +107,7 @@ public class BubbleEndPointResource {
     	 */
     	try {
     		bubbleEngine = new BubbleEngine();
-    		return bubbleEngine.workflowEngine(textFilter, googleClient);
+    		return bubbleEngine.workflowEngine(textFilter, googleClient, textAlyticsClient, textAlyticsRelevance);
         }
     	catch(WebApplicationException webApplicationException) {
     		logger.error("Exception on searchBubble. Status response: "+webApplicationException.getResponse().getStatus());

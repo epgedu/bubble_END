@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import com.yammer.metrics.core.HealthCheck;
 
 import es.uned.epardo30.bubbleend.core.BubbleEngine;
+import es.uned.epardo30.bubbleend.dto.LatticeDto;
 import es.uned.epardo30.bubbleend.resources.BubbleEndPointResource;
 
 
@@ -37,12 +38,8 @@ public class BubbleEndPointHealth extends HealthCheck {
 		BubbleEngine bubbleEngine = new BubbleEngine();
 		try {
 			logger.debug("checking external resource google service search");
-			JSONObject googleResponse = bubbleEndPointResource.getGoogleClient().getResource("universidad uned");
-			logger.debug("Test google service search ok...");
-			
-			logger.debug("checking for processing google out... ");
-			bubbleEngine.processGoogleOut(googleResponse);
-			logger.debug("Test for processing google out ok...");
+			bubbleEngine.workflowEngine("universidad uned", bubbleEndPointResource.getGoogleClient(), 
+										 bubbleEndPointResource.getTextAlyticsClient());
 			
 			logger.debug("Health Check completed!!!");
 	        return Result.healthy();	

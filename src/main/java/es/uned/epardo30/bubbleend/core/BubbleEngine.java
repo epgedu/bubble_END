@@ -3,12 +3,11 @@ package es.uned.epardo30.bubbleend.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,19 +17,25 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import es.uned.epardo30.bubbleend.core.clients.goggle.GoogleClient;
+import es.uned.epardo30.bubbleend.core.clients.textalytics.TextAlyticsClient;
 import es.uned.epardo30.bubbleend.dto.ContentDescriptorDto;
 import es.uned.epardo30.bubbleend.dto.ContentObjectDto;
 import es.uned.epardo30.bubbleend.dto.FormalConceptDto;
 import es.uned.epardo30.bubbleend.dto.LatticeDto;
 import es.uned.epardo30.bubbleend.dto.clients.google.ItemGoogleDto;
 import es.uned.epardo30.bubbleend.dto.clients.google.ResultsGoogleDto;
+import es.uned.epardo30.bubbleend.dto.clients.textalytics.AttributeDto;
+import es.uned.epardo30.bubbleend.dto.clients.textalytics.ObjectDto;
+import es.uned.epardo30.bubbleend.dto.clients.textalytics.RelationDto;
+import es.uned.epardo30.bubbleend.dto.clients.textalytics.ResultsTextAlyticsDto;
 import es.uned.epardo30.bubbleend.exceptions.InternalServerException;
+import es.uned.epardo30.bubbleend.mapper.client.textalytics.MapperTextAlyticsXmlToDto;
 
 public class BubbleEngine {
 	
 	static Logger logger = Logger.getLogger(BubbleEngine.class);
 	
-	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient) {
+	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double relevanceConf) {
 		//llamaremos al local method callToGoogleClient
 		//este nos devuelve un xml el cual tiene que ser procesadoo para obtener los descriptores y devuelve la entrada al AFC
 		//llamamos al local method callToAfcClient
@@ -40,11 +45,11 @@ public class BubbleEngine {
 			logger.debug("Initializing workflowEngine...");
 			JSONObject googleResultJson = this.callToGoogleClient(googleClient, textSearchFilter);
 			ResultsGoogleDto resultsGoogleDto = this.processGoogleOut(googleResultJson);
-			this.callTextalyticsProcess(resultsGoogleDto);
-			this.createAfcIn();
-			File xmlFile = this.callToAfcClient();
-			return this.processAfcOut(xmlFile);
-		
+			this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf);
+			//this.createAfcIn();
+			//File xmlFile = this.callToAfcClient();
+			//return this.processAfcOut(xmlFile);
+			return null;
 	}
 	
 	/**
@@ -79,26 +84,23 @@ public class BubbleEngine {
 			ResultsGoogleDto resultsGoogleDto = new ResultsGoogleDto(new ArrayList<ItemGoogleDto>());
 			
 			//read the json from google service search
-			JSONArray items = (JSONArray) googleResultJson.get("itmes");
+			JSONArray items = (JSONArray) googleResultJson.get("items");
 			//process every item
-			Iterator<JSONObject> itemsJson = ((List<JSONObject>) items).iterator();
+			//Iterator<JSONObject> itemsJson = ((List<JSONObject>) items).iterator();
 			String title;
 			String htmlFormattedUrl;
 			String snnipet;
-			String description;
-			while (itemsJson.hasNext()) {
-				JSONObject item = itemsJson.next();
+			for(int i=0; i<items.length(); i++) {
+				JSONObject item = items.getJSONObject(i);
 				//saved the item title
 				title = item.getString("title");
 				//save the url
 				htmlFormattedUrl = item.getString("formattedUrl");
 				//save the snnipet
 				snnipet = item.getString("snippet");
-				//save the description
-				description = item.getString("description");
 				
 				//saved the data on dto results
-				resultsGoogleDto.getItemsGoogleDto().add(new ItemGoogleDto(title, htmlFormattedUrl, snnipet, description));
+				resultsGoogleDto.getItemsGoogleDto().add(new ItemGoogleDto(title, htmlFormattedUrl, snnipet));
 			}
 			
 			return resultsGoogleDto;
@@ -112,28 +114,76 @@ public class BubbleEngine {
 	/**
 	 * For each result saved on ResultGoogleDto object, we call to textAlytics services in order to get the attributes or descriptors for each one. 
 	 * @param resultsGoogleDto
+	 * @param textAlyticsClient 
 	 */
-	public void callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto) {
+	public ResultsTextAlyticsDto callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto, TextAlyticsClient textAlyticsClient, double relevanceConf) {
+		logger.debug("BubbleEngine.callTextalyticsProcess");
+		ItemGoogleDto item;
+		String textToSend;
+		MapperTextAlyticsXmlToDto mapperTextAlyticsXmlToDto;
+		ResultsTextAlyticsDto resultsTextAlyticsDto;
 		try {
-			logger.debug("BubbleEngine.callTextalyticsProcess");
-			ItemGoogleDto item;
-			String textToSend;
-			for (int i = 0; i < resultsGoogleDto.getItemsGoogleDto().size(); i++) {
+			mapperTextAlyticsXmlToDto = new MapperTextAlyticsXmlToDto();
+			resultsTextAlyticsDto = new ResultsTextAlyticsDto();
+			resultsTextAlyticsDto.setObjectsDto(new ArrayList<ObjectDto>());
+			resultsTextAlyticsDto.setAttributesDto(new ArrayList<AttributeDto>());
+			resultsTextAlyticsDto.setContextDto(new ArrayList<RelationDto>());
+			
+			int maxLoopTextAlytics;
+			if(logger.getLevel() == Level.DEBUG) {
+				maxLoopTextAlytics = 3;
+			}
+			else {
+				maxLoopTextAlytics = resultsGoogleDto.getItemsGoogleDto().size();
+			}
+			
+			for (int i = 0; i < maxLoopTextAlytics; i++) {
 				item = resultsGoogleDto.getItemsGoogleDto().get(i);
 				//join the tittle, snnipet and description
-				textToSend = item.getTitle()+" "+item.getSnnipet()+" "+item.getDescription();
-				logger.debug("text to send to TextAlytics: "+textToSend);
+				textToSend = item.getTitle()+" "+item.getSnnipet();
+				//logger.debug("text to send to TextAlytics: "+textToSend);
 				//call the textAlytics service
-				
+				String response = textAlyticsClient.getResource(textToSend);
 				//process the textAlytics response
+				//logger.debug("xml from textalytics service: "+response);
+				logger.debug("Proccesing attributes for object: "+item.getTitle());
+				mapperTextAlyticsXmlToDto.map(response, item, resultsTextAlyticsDto, i, relevanceConf);
 			}
+			logger.debug("out from textalytics process: ");
+			logger.debug("attributes:");
+			for(int i=0; i<resultsTextAlyticsDto.getAttributesDto().size(); i++) {
+				logger.debug(resultsTextAlyticsDto.getAttributesDto().get(i).getId());
+				logger.debug(resultsTextAlyticsDto.getAttributesDto().get(i).getForm());
+				logger.debug(resultsTextAlyticsDto.getAttributesDto().get(i).getType());
+			}
+			logger.debug("objects:");
+			for(int i=0; i<resultsGoogleDto.getItemsGoogleDto().size(); i++) {
+				logger.debug(i);
+				logger.debug(resultsGoogleDto.getItemsGoogleDto().get(i).getTitle());
+				logger.debug(resultsGoogleDto.getItemsGoogleDto().get(i).getSnnipet());
+				logger.debug(resultsGoogleDto.getItemsGoogleDto().get(i).getHtmlFormattedUrl());
+			}
+			logger.debug("context:");
+			for(int i=0; i<resultsTextAlyticsDto.getContextDto().size(); i++) {
+				logger.debug("object: "+resultsTextAlyticsDto.getContextDto().get(i).getIdObject());
+				logger.debug("attribute: "+resultsTextAlyticsDto.getContextDto().get(i).getIdDescriptor());
+			}
+			return resultsTextAlyticsDto;
 			
 		}
 		catch(Exception exception) {
 			logger.error("Exception on callTextalyticsProcess() method: ", exception);
 			throw new InternalServerException("Exception on Textalytics process: "+exception.getMessage());
 		}
+		finally {
+			item = null;
+			textToSend = null;
+			mapperTextAlyticsXmlToDto = null;
+			resultsTextAlyticsDto = null;
+		}
 	}
+	
+	
 	
 	public void createAfcIn() {
 		try {
@@ -149,7 +199,8 @@ public class BubbleEngine {
 		//llamamos al cliente del servicio AFC, obteniedo el XML como resultado
 		try {
 			//read the result xml from AFC services
-			File xmlFile = new File("c:/uned/bubble/conf/salida.xml");
+			//File xmlFile = new File("c:/uned/bubble/conf/salida.xml");
+			File xmlFile = new File("c:/uned/bubble/conf/tiny-afc.xml");
 			return xmlFile;
 			
 				 	

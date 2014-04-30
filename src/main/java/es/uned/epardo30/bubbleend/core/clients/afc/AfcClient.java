@@ -9,7 +9,7 @@ import com.sun.jersey.api.client.WebResource;
 
 public class AfcClient {
 	
-static Logger logger = Logger.getLogger(AfcClient.class);
+	static Logger logger = Logger.getLogger(AfcClient.class);
 	
 	private Client client;
 	private String host;

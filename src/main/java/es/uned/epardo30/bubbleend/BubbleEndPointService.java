@@ -12,6 +12,7 @@ import com.yammer.dropwizard.config.FilterBuilder;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import es.uned.epardo30.bubbleend.core.clients.goggle.GoogleClient;
+import es.uned.epardo30.bubbleend.core.clients.textalytics.TextAlyticsClient;
 import es.uned.epardo30.bubbleend.health.BubbleEndPointHealth;
 import es.uned.epardo30.bubbleend.resources.BubbleEndPointResource;
 
@@ -66,16 +67,25 @@ public class BubbleEndPointService extends Service<BubbleEndPointConfiguation> {
         logger.debug("Creating client jersey to connect to external resources...");
         final Client client = new JerseyClientBuilder().using(configuration.getJerseyClientConfiguration()).using(environment).build();
         
+        
         logger.debug("Creating google client...");
         final GoogleClient goggleClient = new GoogleClient(client, configuration.getGoogleResourceIp(), configuration.getGoogleResourcePort(), configuration.getGoogleApiKey(), 
         											 configuration.getGoogleSearchEngineId(), configuration.getGoogleResourceProtocol(), configuration.getGoogleResourceContext());
         
+        logger.debug("Creating textAlytics client...");
+        final TextAlyticsClient textAlyticsClient = new TextAlyticsClient(client, configuration.getTextalyticsResourceIp(),
+        																  configuration.getTextalyticsResourcePort(),
+        																  configuration.getTextalyticsKey(),
+        																  configuration.getTextalyticsResourceProtocol(),
+        																  configuration.getTextalyticsResourceContext(),
+        																  configuration.getTextalyticsLanguage());
+        
         logger.debug("Adding Bubble resource...");
-        environment.addResource(new BubbleEndPointResource(goggleClient));
+        environment.addResource(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance()));
     	
         
         logger.debug("Running the health checking...");
-        environment.addHealthCheck(new BubbleEndPointHealth(new BubbleEndPointResource(goggleClient)));
+        environment.addHealthCheck(new BubbleEndPointHealth(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance())));
     	
     	logger.debug("add filter to environment modifying the original paramters...");
     	environment.addFilter(CrossOriginFilter.class, "*").setInitParam("allowedOrigins", "*").setInitParam("allowedMethods", "GET,POST,DELETE,PUT,HEAD").setInitParam("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
