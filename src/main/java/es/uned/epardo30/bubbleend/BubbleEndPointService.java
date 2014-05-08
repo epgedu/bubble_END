@@ -11,8 +11,9 @@ import com.yammer.dropwizard.config.FilterBuilder;
 
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
-import es.uned.epardo30.bubbleend.core.clients.goggle.GoogleClient;
-import es.uned.epardo30.bubbleend.core.clients.textalytics.TextAlyticsClient;
+import es.uned.epardo30.bubbleend.externalresource.afc.core.AfcClient;
+import es.uned.epardo30.bubbleend.externalresource.goggle.core.GoogleClient;
+import es.uned.epardo30.bubbleend.externalresource.textalytics.core.TextAlyticsClient;
 import es.uned.epardo30.bubbleend.health.BubbleEndPointHealth;
 import es.uned.epardo30.bubbleend.resources.BubbleEndPointResource;
 
@@ -80,12 +81,15 @@ public class BubbleEndPointService extends Service<BubbleEndPointConfiguation> {
         																  configuration.getTextalyticsResourceContext(),
         																  configuration.getTextalyticsLanguage());
         
+        logger.debug("Creating afc client...");
+        final AfcClient afcClient = new AfcClient(client, configuration.getAfcResourceIp(), configuration.getAfcResourcePort(), configuration.getAfcResourceProtocol(), configuration.getAfcResourceContext());
+        
         logger.debug("Adding Bubble resource...");
-        environment.addResource(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance()));
+        environment.addResource(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance(), afcClient));
     	
         
         logger.debug("Running the health checking...");
-        environment.addHealthCheck(new BubbleEndPointHealth(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance())));
+        environment.addHealthCheck(new BubbleEndPointHealth(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance(), afcClient)));
     	
     	logger.debug("add filter to environment modifying the original paramters...");
     	environment.addFilter(CrossOriginFilter.class, "*").setInitParam("allowedOrigins", "*").setInitParam("allowedMethods", "GET,POST,DELETE,PUT,HEAD").setInitParam("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");

@@ -91,6 +91,18 @@ public class BubbleEndPointConfiguation extends Configuration{
 	@NotNull
 	private double textalyticsRelevance;
 	
+	@NotEmpty
+	private String afcResourceIp;
+	
+	@NotNull
+	private int afcResourcePort;
+	
+	@NotEmpty
+	private String afcResourceProtocol;
+	
+	@NotEmpty
+	private String afcResourceContext;
+	
 	@JsonProperty
 	public String getGoogleResourceIp() {
 		return googleResourceIp;
@@ -260,7 +272,45 @@ public class BubbleEndPointConfiguation extends Configuration{
 	public void setTextalyticsRelevance(double textalyticsRelevance) {
 		this.textalyticsRelevance = textalyticsRelevance;
 	}
-	
-	
-	
+
+	@JsonProperty
+	public String getAfcResourceIp() {
+		return afcResourceIp;
+	}
+
+	@JsonProperty
+	public void setAfcResourceIp(String afcResourceIp) {
+		this.afcResourceIp = afcResourceIp;
+	}
+
+	@JsonProperty
+	public int getAfcResourcePort() {
+		return afcResourcePort;
+	}
+
+	@JsonProperty
+	public void setAfcResourcePort(int afcResourcePort) {
+		this.afcResourcePort = afcResourcePort;
+	}
+
+	@JsonProperty
+	public String getAfcResourceProtocol() {
+		return afcResourceProtocol;
+	}
+
+	@JsonProperty
+	public void setAfcResourceProtocol(String afcResourceProtocol) {
+		this.afcResourceProtocol = afcResourceProtocol;
+	}
+
+	@JsonProperty
+	public String getAfcResourceContext() {
+		return afcResourceContext;
+	}
+
+	@JsonProperty
+	public void setAfcResourceContext(String afcResourceContext) {
+		this.afcResourceContext = afcResourceContext;
+	}
+
 }

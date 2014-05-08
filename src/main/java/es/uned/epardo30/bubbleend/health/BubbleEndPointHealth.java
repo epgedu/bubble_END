@@ -1,12 +1,10 @@
 package es.uned.epardo30.bubbleend.health;
 
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import com.yammer.metrics.core.HealthCheck;
 
 import es.uned.epardo30.bubbleend.core.BubbleEngine;
-import es.uned.epardo30.bubbleend.dto.LatticeDto;
 import es.uned.epardo30.bubbleend.resources.BubbleEndPointResource;
 
 
@@ -39,7 +37,8 @@ public class BubbleEndPointHealth extends HealthCheck {
 		try {
 			logger.debug("checking external resource google service search");
 			bubbleEngine.workflowEngine("universidad uned", bubbleEndPointResource.getGoogleClient(), 
-										 bubbleEndPointResource.getTextAlyticsClient());
+										 bubbleEndPointResource.getTextAlyticsClient(), bubbleEndPointResource.getTextAlyticsRelevance(),
+										 bubbleEndPointResource.getAfcClient());
 			
 			logger.debug("Health Check completed!!!");
 	        return Result.healthy();	

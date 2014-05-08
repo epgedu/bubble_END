@@ -1,9 +1,10 @@
 package es.uned.epardo30.bubbleend.resources;
 
 import es.uned.epardo30.bubbleend.core.BubbleEngine;
-import es.uned.epardo30.bubbleend.core.clients.goggle.GoogleClient;
-import es.uned.epardo30.bubbleend.core.clients.textalytics.TextAlyticsClient;
-import es.uned.epardo30.bubbleend.dto.LatticeDto;
+import es.uned.epardo30.bubbleend.externalresource.afc.core.AfcClient;
+import es.uned.epardo30.bubbleend.externalresource.afc.dto.LatticeDto;
+import es.uned.epardo30.bubbleend.externalresource.goggle.core.GoogleClient;
+import es.uned.epardo30.bubbleend.externalresource.textalytics.core.TextAlyticsClient;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -61,11 +62,15 @@ public class BubbleEndPointResource {
     
     //textAlytics rekevance
     private double textAlyticsRelevance;
+    
+    //afc client
+    private final AfcClient afcClient;
 
-    public BubbleEndPointResource(GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double textAlyticsRelevance) {
+    public BubbleEndPointResource(GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double textAlyticsRelevance, AfcClient afcClient) {
     	this.googleClient = googleClient;
     	this.textAlyticsClient = textAlyticsClient;
     	this.textAlyticsRelevance = textAlyticsRelevance;
+    	this.afcClient = afcClient;
     }
     
     public GoogleClient getGoogleClient() {
@@ -74,6 +79,14 @@ public class BubbleEndPointResource {
     
     public TextAlyticsClient getTextAlyticsClient() {
     	return textAlyticsClient;
+    }
+    
+    public double getTextAlyticsRelevance() {
+		return textAlyticsRelevance;
+	}
+    
+    public AfcClient getAfcClient() {
+    	return afcClient;
     }
 
 	/**
@@ -107,7 +120,7 @@ public class BubbleEndPointResource {
     	 */
     	try {
     		bubbleEngine = new BubbleEngine();
-    		return bubbleEngine.workflowEngine(textFilter, googleClient, textAlyticsClient, textAlyticsRelevance);
+    		return bubbleEngine.workflowEngine(textFilter, googleClient, textAlyticsClient, textAlyticsRelevance, afcClient);
         }
     	catch(WebApplicationException webApplicationException) {
     		logger.error("Exception on searchBubble. Status response: "+webApplicationException.getResponse().getStatus());
