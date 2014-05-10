@@ -40,5 +40,9 @@ public class LatticeDto {
 							+"]";
 	}
 	
-	
+	@Override
+	public boolean equals(Object object) {
+		LatticeDto latticeDto = (LatticeDto)object;
+		return this.getContentObjects().equals(latticeDto.getContentObjects());
+	}
 }

@@ -6,7 +6,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import es.uned.epardo30.bubbleend.BubbleEndPointService;
 
 public class InternalServerException extends WebApplicationException {
 	

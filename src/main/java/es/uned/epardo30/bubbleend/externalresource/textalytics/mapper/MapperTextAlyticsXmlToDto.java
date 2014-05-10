@@ -77,9 +77,10 @@ public class MapperTextAlyticsXmlToDto {
         				if(!itemFound) {
         					//logger.debug("attribute not found");
         					//add the item on attributes for  final result
-        					resultsTextAlyticsDto.getAttributesDto().add(new AttributeDto(resultsTextAlyticsDto.getAttributesDto().size(), relevanceListAttribute.get(i).getForm(), relevanceListAttribute.get(i).getType()));
+        					int idNewAttribute = resultsTextAlyticsDto.getAttributesDto().size()+1;
+        					resultsTextAlyticsDto.getAttributesDto().add(new AttributeDto(idNewAttribute, relevanceListAttribute.get(i).getForm(), relevanceListAttribute.get(i).getType()));
         					//add the context
-        					resultsTextAlyticsDto.getContextDto().add(new RelationDto(indexItemGoogle, resultsTextAlyticsDto.getAttributesDto().size() -1 ));
+        					resultsTextAlyticsDto.getContextDto().add(new RelationDto(indexItemGoogle, idNewAttribute ));
         				}
         				else {
         					//add the context

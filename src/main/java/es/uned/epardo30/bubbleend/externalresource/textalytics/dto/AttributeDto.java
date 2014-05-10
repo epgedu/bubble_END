@@ -31,4 +31,12 @@ public class AttributeDto {
 		this.type = type;
 	}
 	
+	@Override
+	public boolean equals(Object object) {
+		AttributeDto attributeDto = (AttributeDto)object;
+		return this.getId() == attributeDto.getId() &&
+				this.getForm().equals(attributeDto.getForm()) &&
+				this.getType().equals(attributeDto.getType());
+	}
+	
 }

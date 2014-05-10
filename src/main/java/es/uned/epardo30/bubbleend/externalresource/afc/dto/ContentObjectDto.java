@@ -34,4 +34,11 @@ public class ContentObjectDto {
 									+this.value
 									+"]";
 	}
+	
+	@Override
+	public boolean equals(Object object) {
+		ContentObjectDto contentObjectDto = (ContentObjectDto) object;
+		return this.getId().equals(contentObjectDto.getId()) &&
+				this.getValue().equals(contentObjectDto.getValue());
+	}
 }

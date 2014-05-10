@@ -25,4 +25,12 @@ public class ContentDescriptorDto {
 									+this.value
 									+"]";
 	}
+	
+	@Override
+	public boolean equals(Object object) {
+		ContentDescriptorDto contentDescriptorDto = (ContentDescriptorDto) object;
+		return this.getId().equals(contentDescriptorDto.getId()) &&
+				this.getValue().equals(contentDescriptorDto.getValue());
+		
+	}
 }

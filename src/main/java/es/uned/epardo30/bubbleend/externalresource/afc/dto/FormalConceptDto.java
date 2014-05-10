@@ -76,4 +76,14 @@ public class FormalConceptDto {
 									+this.childrenFormalConceptId
 									+"]";
 	}
+	
+	@Override
+	public boolean equals(Object object) {
+		FormalConceptDto formalConceptDto = (FormalConceptDto) object;
+		return this.getConceptId().equals(formalConceptDto.getConceptId()) &&
+				this.getExtension().equals(formalConceptDto.getExtension()) &&
+				this.getIntension().equals(formalConceptDto.getIntension()) &&
+				this.getParentsFormalConceptId().equals(formalConceptDto.getParentsFormalConceptId()) &&
+				this.getChildrenFormalConceptId().equals(formalConceptDto.getChildrenFormalConceptId());
+	}
 }

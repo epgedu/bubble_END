@@ -23,6 +23,11 @@ public class RelationDto {
 		this.idDescriptor = idDescriptor;
 	}
 	
-	
+	@Override
+	public boolean equals(Object object) {
+		RelationDto relationDto = (RelationDto) object;
+		return this.getIdObject() == relationDto.getIdObject() &&
+				this.getIdDescriptor() == relationDto.getIdDescriptor();
+	}
 }
  

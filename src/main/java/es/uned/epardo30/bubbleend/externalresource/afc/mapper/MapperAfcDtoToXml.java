@@ -1,19 +1,20 @@
 package es.uned.epardo30.bubbleend.externalresource.afc.mapper;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 
 import es.uned.epardo30.bubbleend.externalresource.google.dto.ItemGoogleDto;
 import es.uned.epardo30.bubbleend.externalresource.google.dto.ResultsGoogleDto;
@@ -31,27 +32,35 @@ public class MapperAfcDtoToXml {
 
 	private static Logger logger = Logger.getLogger(MapperAfcDtoToXml.class);
 	
-	public String map(ResultsGoogleDto resultsGoogleDto, ResultsTextAlyticsDto resultsTextAlyticsDto) throws ParserConfigurationException, TransformerException {
+	public String map(ResultsGoogleDto resultsGoogleDto, ResultsTextAlyticsDto resultsTextAlyticsDto) throws ParserConfigurationException, TransformerException, IOException {
 		logger.debug("MapperAfcDtoToXml.map...");
 		
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
- 
+		DOMImplementation implementation = docBuilder.getDOMImplementation();
+		Document doc = implementation.createDocument(null, "generadorContexto", null);
+		doc.setXmlVersion("1.0");
 		// root elements
-		Document doc = docBuilder.newDocument();
-		Element rootElement = doc.createElement("generadorContexto");
-		doc.appendChild(rootElement);
+		Element rootElement = doc.getDocumentElement();
 		
 		// afc elements
 		Element afc = doc.createElement("afc");
-		rootElement.appendChild(afc);
 		
 		// objects elements
 		Element objects =  doc.createElement("objetos");
-		afc.appendChild(objects);
 		Element object;
-		int idObject = 0;
-		for (ItemGoogleDto objectDto : resultsGoogleDto.getItemsGoogleDto()) {
+		int idObject = 1;
+		int maxLoopObjects;
+		if(logger.isDebugEnabled()) {
+			//just process the three first results from google
+			maxLoopObjects = 3;
+		}
+		else {
+			maxLoopObjects = resultsGoogleDto.getItemsGoogleDto().size();
+		}
+		ItemGoogleDto objectDto = null;
+		for(int i=0; i<maxLoopObjects; i++) {
+			objectDto = resultsGoogleDto.getItemsGoogleDto().get(i);
 			object = doc.createElement("objeto");
 			object.setAttribute("id", "o"+idObject);
 			//just the url as content
@@ -59,10 +68,10 @@ public class MapperAfcDtoToXml {
 			objects.appendChild(object);
 			idObject++;
 		}
- 
+		afc.appendChild(objects);
+		
 		//descriptors elements
-		Element descriptors =  doc.createElement("descriptores");
-		afc.appendChild(descriptors);
+		Element descriptors = doc.createElement("descriptores");
 		Element descriptor;
 		for (AttributeDto attributeDto : resultsTextAlyticsDto.getAttributesDto()) {
 			descriptor = doc.createElement("descriptor");
@@ -71,37 +80,46 @@ public class MapperAfcDtoToXml {
 			descriptor.setTextContent(attributeDto.getForm());
 			descriptors.appendChild(descriptor);
 		}
+		afc.appendChild(descriptors);
 		
 		//context element
 		Element context =  doc.createElement("contexto");
-		afc.appendChild(context);
 		Element relation;
 		Element objectRelation;
 		Element descriptorRelation;
 		for (RelationDto relationDto : resultsTextAlyticsDto.getContextDto()) {
 			relation = doc.createElement("relacion");
-			context.appendChild(relation);
 			//object element for the relation
 			objectRelation = doc.createElement("objeto");
-			relation.appendChild(objectRelation);
 			objectRelation.setAttribute("idref", "o"+relationDto.getIdObject());
+			relation.appendChild(objectRelation);
 			//descriptor element for the relation
 			descriptorRelation = doc.createElement("objeto");
-			relation.appendChild(descriptorRelation);
 			descriptorRelation.setAttribute("idref", "d"+relationDto.getIdDescriptor());
+			relation.appendChild(descriptorRelation);
+			context.appendChild(relation);
+			
 		}
-		
+		afc.appendChild(context);
+		rootElement.appendChild(afc);
 		logger.debug("mapping xml to entrace Afc to String...");
-		return this.mapDocToString(doc);	
+		return format(doc);
 	}
 	
-	private String mapDocToString(Document document) throws TransformerException {
-		TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
-        // below code to remove XML declaration
-        // transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        StringWriter writer = new StringWriter();
-        transformer.transform(new DOMSource(document), new StreamResult(writer));
-        return writer.toString();
+	
+	public String format(Document document) {
+        try {
+            OutputFormat format = new OutputFormat(document);
+            format.setLineWidth(65);
+            format.setIndenting(true);
+            format.setIndent(2);
+            Writer out = new StringWriter();
+            XMLSerializer serializer = new XMLSerializer(out, format);
+            serializer.serialize(document);
+
+            return out.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

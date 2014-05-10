@@ -42,8 +42,7 @@ public class AfcClient {
 		String entranceAfcEncode = URLEncoder.encode(entranceAfc, "UTF-8");
 		
 		String url = this.afcProtocol+"://"+this.host+":"+this.port+this.afcContext+"?ficheroXMLEntrada="+entranceAfcEncode;
-		logger.debug("url service afc: "+url);
-		
+		logger.debug("url service afc: "+entranceAfc);
 		//process the response
 		WebResource webResource = client.resource(url);
 		

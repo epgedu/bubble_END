@@ -21,5 +21,11 @@ public class ResultsTextAlyticsDto {
 		this.contextDto = contextDto;
 	}
 	
-
+	@Override
+	public boolean equals(Object object) {
+		ResultsTextAlyticsDto resultsTextAlyticsDto = (ResultsTextAlyticsDto)object;
+		return this.getAttributesDto().equals(resultsTextAlyticsDto.getAttributesDto()) &&
+				this.getContextDto().equals(resultsTextAlyticsDto.getContextDto());
+	}
+	
 }

@@ -96,13 +96,11 @@ public class BubbleEngine {
 				item = resultsGoogleDto.getItemsGoogleDto().get(i);
 				//join the tittle, snnipet and description
 				textToSend = item.getTitle()+" "+item.getSnnipet();
-				//logger.debug("text to send to TextAlytics: "+textToSend);
 				//call the textAlytics service
 				String response = textAlyticsClient.getResource(textToSend);
 				//process the textAlytics response
-				//logger.debug("xml from textalytics service: "+response);
 				logger.debug("Proccesing attributes for object: "+item.getTitle());
-				mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i, relevanceConf);
+				mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);
 			}
 			logger.debug("out from textalytics process: ");
 			logger.debug("attributes:");
