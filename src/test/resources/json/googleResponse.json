@@ -1,0 +1,42 @@
+{
+	"queries": {
+		"nextPage": [{"title": "Google Custom Search - Universidad UNED","totalResults": "207","searchTerms": "Universidad UNED","count": 10,"startIndex": 11,"inputEncoding": "utf8","outputEncoding": "utf8","safe": "off","cx": "001381836626139536503:moq1dgtw3rq"}],"request": [{"title": "Google Custom Search - Universidad UNED","totalResults": "207","searchTerms": "Universidad UNED","count": 10,"startIndex": 1,"inputEncoding": "utf8","outputEncoding": "utf8","safe": "off","cx": "001381836626139536503:moq1dgtw3rq"}]
+	},
+	"context": {
+		"title": "bubble"
+	},
+	"searchInformation": {"searchTime": 0.152996,"formattedSearchTime": "0,15","totalResults": "207","formattedTotalResults": "207"},
+	"items": [{"kind": "customsearch#result","title": "title del primer resultado",
+		       "htmlTitle": "title del primer resultado",
+			   "link": "http://www.marca.com/accesible/2013/06/20/mas_deportes/ajedrez/1371728619.html",
+			   "displayLink": "www.marca.com",
+			   "snippet": "snippet del primer resultado",
+			   "htmlSnippet": "20 Jun 2013 \u003cb\u003e...\u003c/b\u003e Con ese objetivo, los colegios Gredos-San Diego y la \u003cb\u003eUniversidad\u003c/b\u003e de Educaci[0xc3][0xb3]n \u003cbr\u003e\na Distancia (\u003cb\u003eUNED\u003c/b\u003e) organizan un congreso en Buitrago&nbsp;...",
+			   "cacheId": "i2nQFrxskCAJ",
+			   "formattedUrl": "url del primer resultado",
+			   "htmlFormattedUrl": "url del primer resultado",
+			  },
+			  {"kind": "customsearch#result","title": "title del segundo resultado",
+		       "htmlTitle": "title del segundo resultado",
+			   "link": "http://www.marca.com/accesible/2013/06/20/mas_deportes/ajedrez/1371728619.html",
+			   "displayLink": "www.marca.com",
+			   "snippet": "snippet del segundo resultado",
+			   "htmlSnippet": "20 Jun 2013 \u003cb\u003e...\u003c/b\u003e Con ese objetivo, los colegios Gredos-San Diego y la \u003cb\u003eUniversidad\u003c/b\u003e de Educaci[0xc3][0xb3]n \u003cbr\u003e\na Distancia (\u003cb\u003eUNED\u003c/b\u003e) organizan un congreso en Buitrago&nbsp;...",
+			   "cacheId": "i2nQFrxskCAJ",
+			   "formattedUrl": "url del segundo resultado",
+			   "htmlFormattedUrl": "url del segundo resultado",
+			  },
+			  {"kind": "customsearch#result","title": "title del tercer resultado",
+		       "htmlTitle": "title del tercer resultado",
+			   "link": "http://www.marca.com/accesible/2013/06/20/mas_deportes/ajedrez/1371728619.html",
+			   "displayLink": "www.marca.com",
+			   "snippet": "snippet del tercer resultado",
+			   "htmlSnippet": "20 Jun 2013 \u003cb\u003e...\u003c/b\u003e Con ese objetivo, los colegios Gredos-San Diego y la \u003cb\u003eUniversidad\u003c/b\u003e de Educaci[0xc3][0xb3]n \u003cbr\u003e\na Distancia (\u003cb\u003eUNED\u003c/b\u003e) organizan un congreso en Buitrago&nbsp;...",
+			   "cacheId": "i2nQFrxskCAJ",
+			   "formattedUrl": "url del tercer resultado",
+			   "htmlFormattedUrl": "url del tercer resultado",
+			  }
+			 ]
+}			 
+
+
