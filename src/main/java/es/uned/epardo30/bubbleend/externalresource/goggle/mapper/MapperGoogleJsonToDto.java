@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
 import es.uned.epardo30.bubbleend.exceptions.InternalServerException;
 import es.uned.epardo30.bubbleend.externalresource.google.dto.ItemGoogleDto;
 import es.uned.epardo30.bubbleend.externalresource.google.dto.ResultsGoogleDto;
@@ -25,8 +27,16 @@ public class MapperGoogleJsonToDto {
 			//init dto structure
 			ResultsGoogleDto resultsGoogleDto = new ResultsGoogleDto(new ArrayList<ItemGoogleDto>());
 			
-			//read the json from google service search
-			JSONArray items = (JSONArray) googleResultJson.get("items");
+			JSONArray items;
+			try {
+				//read the json from google service search
+				items = (JSONArray) googleResultJson.get("items");
+			}
+			catch(JSONException jsonException) {
+				logger.info("Not found items from google service", jsonException);
+				throw new InternalServerException("Exception on bubble engine processing: "+jsonException.getMessage());
+				//return resultsGoogleDto;
+			}
 			//process every item
 			//Iterator<JSONObject> itemsJson = ((List<JSONObject>) items).iterator();
 			String title;

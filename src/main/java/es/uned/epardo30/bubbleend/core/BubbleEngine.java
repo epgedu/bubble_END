@@ -33,9 +33,16 @@ public class BubbleEngine {
 		
 			logger.debug("Initializing workflowEngine...");
 			ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter);
-			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf);
-			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient);
-			return latticeDto;
+			if(resultsGoogleDto.getItemsGoogleDto().isEmpty()) {
+				logger.debug("Return empty lattice");
+				return new LatticeDto();
+			}
+			else {
+				ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf);
+				LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient);
+				return latticeDto;
+			}
+
 	}
 	
 	/**
@@ -96,11 +103,14 @@ public class BubbleEngine {
 				item = resultsGoogleDto.getItemsGoogleDto().get(i);
 				//join the tittle, snnipet and description
 				textToSend = item.getTitle()+" "+item.getSnnipet();
-				//call the textAlytics service
-				String response = textAlyticsClient.getResource(textToSend);
-				//process the textAlytics response
-				logger.debug("Proccesing attributes for object: "+item.getTitle());
-				mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);
+				if(!textToSend.isEmpty()) {
+					//if text to process is not empty for this object
+					//call the textAlytics service
+					String response = textAlyticsClient.getResource(textToSend);
+					//process the textAlytics response
+					logger.debug("Proccesing attributes for object: "+item.getTitle());
+					mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);
+				}
 			}
 			logger.debug("out from textalytics process: ");
 			logger.debug("attributes:");
