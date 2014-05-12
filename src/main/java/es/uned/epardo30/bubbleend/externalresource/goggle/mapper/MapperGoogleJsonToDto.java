@@ -34,8 +34,7 @@ public class MapperGoogleJsonToDto {
 			}
 			catch(JSONException jsonException) {
 				logger.info("Not found items from google service", jsonException);
-				throw new InternalServerException("Exception on bubble engine processing: "+jsonException.getMessage());
-				//return resultsGoogleDto;
+				return resultsGoogleDto;
 			}
 			//process every item
 			//Iterator<JSONObject> itemsJson = ((List<JSONObject>) items).iterator();
