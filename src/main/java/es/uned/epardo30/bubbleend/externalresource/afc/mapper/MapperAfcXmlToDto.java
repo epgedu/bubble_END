@@ -19,31 +19,20 @@ import es.uned.epardo30.bubbleend.externalresource.afc.dto.ContentObjectDto;
 import es.uned.epardo30.bubbleend.externalresource.afc.dto.FormalConceptDto;
 import es.uned.epardo30.bubbleend.externalresource.afc.dto.LatticeDto;
 
-
+/**
+ * Mapping the xml which has been returned from AFC service to DTO object. This object will be returned to Bubble_GUI
+ * 
+ * @author eduardo.guillen
+ *
+ */
 
 public class MapperAfcXmlToDto {
 	
 	private static Logger logger = Logger.getLogger(MapperAfcXmlToDto.class);
 	
 	/**
-	 * Process the xml given from afc service
-	 * That way, we have parsed the lattice. But the lattice has not got the values of objetos tab, only provides the id object but not the value. The same happens with descriptores, i.e
-			we can get the descriptores ids for one formal object but we don't know the value descriptores. 
-			In order to get the values (objetos and descriptores), we have the tabs "objetosContenido" where the value is related with the id object.
-			And we have the tabs "descriptores contenido", where we can get the relation between value descriptor and id descriptor
-			Therefore, first option would be, parser the tags "descriptores contenido" and "objetos contenido" and send them through dto object toward the bubble gui. With this option, we will have
-			to get the relation between "objetos" and its values and the same for descrptores , on javascript code looking for on the json object until to find the id object or id descriptor and then
-			to extract its value.    
-			Therefore, we will change the lattice structure and for each formal concept:
-								- For each id extension, we include its objeto value(description, url, scripter). We know the value from objetoContenido tag
-			                    - For each id intension, we include its descriptor value (descriptor name). We know the value from descriptorContenido tag
-			                    - For each id parents, we don't include the value, becasue the id links with another formal concept (in lattice)
-			                    - For each id children, we don't include the value, because the id links with another formal concept (in lattice)
-			
-			Therefore, maybe we are sending more amount of informatio, because we are sending the same values in differents formal concept but we have two adventages:
-			                  - We don't need to send the information about "objeto contenido" and "descriptor contenido". Neither the information about "objetos" tag, "atributos" tag and "relacion" tag, due to
-		  					    all this information is alaready on the lattice.
-			
+	 * Return a LatticeDto object which contains the information about the returned lattice from AFC service.
+	 *		
 	 * @return LatticeDto
 	 */
 	public LatticeDto map(String xmlStr) {
@@ -196,20 +185,10 @@ public class MapperAfcXmlToDto {
 						formalConceptDto.getChildrenFormalConceptId().add(valueChildrenId);
 						logger.debug("childrenId: "+valueChildrenId);
 					}
-					
-					
 				}
-				
-				
-				
-
-				
 				//save the formalConceptDto in the lattice
 				latticeDto.getContentObjects().add(formalConceptDto);
-				
 			}
-			
-			
 			return latticeDto;
 		}
 		catch(Exception exception) {

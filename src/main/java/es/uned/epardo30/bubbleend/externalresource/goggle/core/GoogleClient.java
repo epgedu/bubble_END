@@ -9,7 +9,7 @@ import com.sun.jersey.api.client.WebResource;
 
 
 /**
- * Client to google service search
+ * Client to call external resource google service search
  * 
  * @author eduardo.guillen
  *
@@ -26,7 +26,19 @@ public class GoogleClient {
 	private String googleResourceProtocol;
 	private String googleResourceContext;
 	
-	
+	/**
+	 * 
+	 * 
+	 * @param client : Client JerseyClientBuilder has been set on BubbleEndPointService.run
+	 * @param host : IP google service server
+	 * @param port : Port google service server
+	 * @param googleResourceProtocol : Protocol google service
+	 * @param googleResourceContext : Context to google service environment
+	 * @param googleApiKey : Developer User Google Key
+	 * @param googleSearchEngineId : ID google app engine "bubble-end" 
+	 * 
+	 * @see es.uned.epardo30.bubbleend.BubbleEndPointService
+	 */
 	public GoogleClient(Client client, String host, int port, String googleApiKey, String googleSearchEngineId, String googleResourceProtocol, String googleResourceContext) {
 		
 		logger.debug("Initializing google client...");
@@ -46,6 +58,11 @@ public class GoogleClient {
 		this.googleResourceContext = googleResourceContext;
 	}
 	
+	/**
+	 * 
+	 * @param textSearchFilter : The text was inserted by user and it's sent from bubble_GUI
+	 * @return JSONObject : Object contains the google results
+	 */
 	public JSONObject getResource(String textSearchFilter) {
 		logger.debug("Google.client.getResource()...");
 		

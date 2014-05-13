@@ -9,6 +9,12 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+/**
+ * Afc client to call the external resource AFC services web.
+ * 
+ * @author eduardo.guillen
+ *
+ */
 public class AfcClient {
 	
 	static Logger logger = Logger.getLogger(AfcClient.class);
@@ -19,6 +25,17 @@ public class AfcClient {
 	private String afcProtocol;
 	private String afcContext;
 	
+	/**
+	 * /**
+	 * 
+	 * @param client : Client JerseyClientBuilder has been set on BubbleEndPointService.run 
+	 * @param host : IP afc service server
+	 * @param port : Port afc service server
+	 * @param afcProtocol : Protocol afc service
+	 * @param afcContext : Context to afc service environment
+	 * 
+	 * @see es.uned.epardo30.bubbleend.BubbleEndPointService
+	 */
 	public AfcClient(Client client, String host, int port, String afcProtocol, String afcContext ) {
 		
 		logger.debug("Initializing afc client...");
@@ -34,6 +51,12 @@ public class AfcClient {
 		this.afcContext = afcContext;
 	}
 	
+	/**
+	 * 
+	 * @param entranceAfc : The String param contains the xml entrance to afc service 
+	 * @return String
+	 * @throws UnsupportedEncodingException
+	 */
 	public String getResource(String entranceAfc) throws UnsupportedEncodingException {
 		
 		logger.debug("AfcClient.getResource()...");

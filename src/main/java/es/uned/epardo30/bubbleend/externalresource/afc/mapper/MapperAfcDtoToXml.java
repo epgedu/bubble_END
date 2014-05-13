@@ -32,6 +32,20 @@ public class MapperAfcDtoToXml {
 
 	private static Logger logger = Logger.getLogger(MapperAfcDtoToXml.class);
 	
+	/**
+	 * Return a String which represents the xml file which is the entrance param to afc service. 
+	 * The out is created using the saved information in google results and textalytics results
+	 * 
+	 * @param resultsGoogleDto
+	 * @param resultsTextAlyticsDto
+	 * @return String
+	 * @throws ParserConfigurationException
+	 * @throws TransformerException
+	 * @throws IOException
+	 * @see ResultsGoogleDto 
+	 * @see ResultsTextAlyticsDto
+	 * 
+	 */
 	public String map(ResultsGoogleDto resultsGoogleDto, ResultsTextAlyticsDto resultsTextAlyticsDto) throws ParserConfigurationException, TransformerException, IOException {
 		logger.debug("MapperAfcDtoToXml.map...");
 		
@@ -64,7 +78,7 @@ public class MapperAfcDtoToXml {
 			object = doc.createElement("objeto");
 			object.setAttribute("id", "o"+idObject);
 			//just the url as content
-			object.setTextContent(objectDto.getHtmlFormattedUrl());
+			object.setTextContent(objectDto.getTitle()+" snippetObjectBubble:"+objectDto.getSnnipet()+" urlObjectBubble:"+objectDto.getHtmlFormattedUrl());
 			objects.appendChild(object);
 			idObject++;
 		}
@@ -77,7 +91,7 @@ public class MapperAfcDtoToXml {
 			descriptor = doc.createElement("descriptor");
 			descriptor.setAttribute("id", "d"+attributeDto.getId());
 			//just the attribute name.
-			descriptor.setTextContent(attributeDto.getForm());
+			descriptor.setTextContent(attributeDto.getForm()+" typeAttributeBubble:"+attributeDto.getType());
 			descriptors.appendChild(descriptor);
 		}
 		afc.appendChild(descriptors);
@@ -106,7 +120,12 @@ public class MapperAfcDtoToXml {
 		return format(doc);
 	}
 	
-	
+	/**
+	 * Transform a document org.w3c to String which contains a xml format content
+	 * 
+	 * @param document
+	 * @return String
+	 */
 	public String format(Document document) {
         try {
             OutputFormat format = new OutputFormat(document);

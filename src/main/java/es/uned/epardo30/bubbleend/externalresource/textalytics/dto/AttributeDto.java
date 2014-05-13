@@ -1,5 +1,11 @@
 package es.uned.epardo30.bubbleend.externalresource.textalytics.dto;
 
+/**
+ * Represents every attribute (syntactic concept) extracted from the analysed text from textalytics 
+ * 
+ * @author eduardo.guillen
+ *
+ */
 public class AttributeDto {
 	
 	private int id;

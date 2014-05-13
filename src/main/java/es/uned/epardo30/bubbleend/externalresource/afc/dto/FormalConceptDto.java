@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * TODO
+ * Represents a formal concept in the lattice which has been created in afc service
  * 
  * @author Eduardo.Guillen
  *
@@ -30,6 +29,11 @@ public class FormalConceptDto {
 		this.conceptId = conceptId;
 	}
 
+	/**
+	 * Get the object list which represents the associated documents to the formal concept.
+	 * @return List<ContentObjectDto>
+	 * @see ContentObjectDto
+	 */
 	public List<ContentObjectDto> getExtension() {
 		return extension;
 	}
@@ -37,7 +41,12 @@ public class FormalConceptDto {
 	public void setExtension(List<ContentObjectDto> extension) {
 		this.extension = extension;
 	}
-
+	
+	/**
+	 * Get the descriptor list which represents the associated descriptors to the formal concept
+	 * @return List<ContentDescriptorDto>
+	 * @see ContentDescriptorDto
+	 */
 	public List<ContentDescriptorDto> getIntension() {
 		return intension;
 	}
@@ -46,6 +55,11 @@ public class FormalConceptDto {
 		this.intension = intension;
 	}
 
+	/**
+	 * Get the parents nodes for the formal concept
+	 * @return List<String>
+	 * 
+	 */
 	public List<String> getParentsFormalConceptId() {
 		return parentsFormalConceptId;
 	}
@@ -54,6 +68,10 @@ public class FormalConceptDto {
 		this.parentsFormalConceptId = parentsFormalConceptId;
 	}
 
+	/**
+	 * Get the children nodes for the formal concept
+	 * @return List<String>
+	 */
 	public List<String> getChildrenFormalConceptId() {
 		return childrenFormalConceptId;
 	}

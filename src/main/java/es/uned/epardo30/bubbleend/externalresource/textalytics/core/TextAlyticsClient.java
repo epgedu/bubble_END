@@ -9,6 +9,14 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+import es.uned.epardo30.bubbleend.BubbleEndPointService;
+
+/**
+ * TextAlytics client to call the external resource TextAlytics services web.
+ * 
+ * @author eduardo.guillen
+ *
+ */
 public class TextAlyticsClient {
 
 	static Logger logger = Logger.getLogger(TextAlyticsClient.class);
@@ -21,6 +29,17 @@ public class TextAlyticsClient {
 	private String textAlyticsContext;
 	private String textAlyticsLanguage;
 	
+	/**
+	 * 
+	 * @param client : Client JerseyClientBuilder has been set on BubbleEndPointService.run
+	 * @param host : IP TextAlytics service server
+	 * @param port : Port TextAlytics servive server
+	 * @param textalyticsKey : User textalytics key 
+	 * @param textAlyticsProtocol : Protocol txtalytics service
+	 * @param textAlyticsContext : Context to textalytics service environment
+	 * @param textAlyticsLanguage : Language to make the syntactic analysis
+	 * @see BubbleEndPointService 
+	 */
 	public TextAlyticsClient(Client client, String host, int port, String textalyticsKey, String textAlyticsProtocol,
 							 String textAlyticsContext, String textAlyticsLanguage) {
 		
@@ -41,6 +60,12 @@ public class TextAlyticsClient {
 		this.textAlyticsLanguage = textAlyticsLanguage;
 	}
 	
+	/**
+	 * 
+	 * @param inputText : Text entrance which will be syntactic analysed 
+	 * @return String : Return String which contains the xml response from textalytics service
+	 * @throws UnsupportedEncodingException
+	 */
 	public String getResource(String inputText) throws UnsupportedEncodingException {
 		
 		logger.debug("TextAlyticsClient.getResource()...");

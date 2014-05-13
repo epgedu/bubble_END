@@ -16,6 +16,7 @@ import es.uned.epardo30.bubbleend.externalresource.google.dto.ResultsGoogleDto;
 
 /**
  * Unit test for MapperGoogleJsonToDto
+ * We are testing the mapping between the json returned from google service toward Dto object
  * 
  * @author eduardo.guillen
  *
@@ -38,6 +39,12 @@ public class MapperGoogleJsonToDtoTest {
 		
 	}
 	
+	/**
+	 * Getting the json object which it will be used as entrance to call MapperGoogleJsonToDto
+	 * 
+	 * @return String
+	 * @throws IOException
+	 */
 	private String getResource() throws IOException {
 		InputStream resourceIS =	this.getClass().getResourceAsStream("/json/googleResponse.json");
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resourceIS));

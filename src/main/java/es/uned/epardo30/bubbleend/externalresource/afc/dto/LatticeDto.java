@@ -5,18 +5,10 @@ import java.util.List;
 
 /**
  * Our service needs to conform to an industry standard, RFC 1149, which specifies the following JSON representation:
- * { "id": 1,
- * 	 "content": 
+ * { LatticeDto [contentObjects=contentObject Json	]"; 
  * }
  * 
- * The id field is a unique identifier for the searching, and content is the found results.
- * To model this representation, we’ll create the present representation class.
- *
- * This is a pretty simple POJO, but there are a few things worth noting here. First, it’s immutable. This makes Searching
- * instances very easy to reason about in multi-threaded environments as well as single-threaded environments. 
- * Second, it uses the Java Bean standard for the id and content properties. This allows Jackson to serialize it to the JSON we need.
- * The Jackson object mapping code will populate the id field of the JSON object with the return value of #getId(), likewise with content and #getContent().
- * 
+ * Represents the lattice which will be returned from bubble_END toward bubble_GUI
  * 
  * @author Eduardo.Guillen
  *
@@ -25,6 +17,11 @@ public class LatticeDto {
 	
 	List<FormalConceptDto> contentObjects = new ArrayList<FormalConceptDto>();
 
+	/**
+	 * Contains every formal concept who's made the lattice
+	 * @return List<FormalConceptDto>
+	 * @see FormalConceptDto
+	 */
 	public List<FormalConceptDto> getContentObjects() {
 		return contentObjects;
 	}

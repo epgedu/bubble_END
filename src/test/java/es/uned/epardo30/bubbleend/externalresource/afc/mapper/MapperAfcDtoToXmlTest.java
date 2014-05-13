@@ -28,7 +28,8 @@ import es.uned.epardo30.bubbleend.externalresource.textalytics.dto.RelationDto;
 import es.uned.epardo30.bubbleend.externalresource.textalytics.dto.ResultsTextAlyticsDto;
 
 /**
- * Unit test for MapperAfcDtoToXml
+ * Unit test for MapperAfcDtoToXml.
+ * We are testing the mapping between the objects dto (resultsGoogleDto and resultsTextAlyticsDto) toward xml request to afc service
  * 
  * @author eduardo.guillen
  *
@@ -64,6 +65,13 @@ public class MapperAfcDtoToXmlTest {
 		assertThat(xmlRequestAfc).isEqualTo(xmlRequesHope);
 	}
 	
+	/**
+	 * Getting the resource (xml file) whose content is the expected content after to execute the test mapping method
+	 * @return String
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	private String getResource() throws IOException, ParserConfigurationException, SAXException {
 		InputStream resourceIS =	this.getClass().getResourceAsStream("/xml/afcRequest.xml");
 		DocumentBuilderFactory factory = null;

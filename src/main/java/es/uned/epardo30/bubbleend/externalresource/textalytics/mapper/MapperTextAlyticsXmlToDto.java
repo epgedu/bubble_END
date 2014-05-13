@@ -21,10 +21,26 @@ import es.uned.epardo30.bubbleend.externalresource.textalytics.dto.AttributeDto;
 import es.uned.epardo30.bubbleend.externalresource.textalytics.dto.RelationDto;
 import es.uned.epardo30.bubbleend.externalresource.textalytics.dto.ResultsTextAlyticsDto;
 
+/**
+ * Mapping the xml file which is got from TextAlytics service to dto object. This dto object will be used to create the entrance to afc service
+ * 
+ * @author eduardo.guillen
+ *
+ */
 public class MapperTextAlyticsXmlToDto {
 	
 	private static Logger logger = Logger.getLogger(MapperTextAlyticsXmlToDto.class);
 	
+	/**
+	 * 
+	 * @param xmlResponse : String which contains the xml content coming from TextAlytics service as response
+	 * @param resultsTextAlyticsDto : Object contains all extracted information from xml file
+	 * @param indexItemGoogle : Index of the object which is being processed in google results array 
+	 * @param relevanceConf : Percent of relevance in order to include an attribute (syntactic concept) as related attribute with google result
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	public void map(String xmlResponse, ResultsTextAlyticsDto resultsTextAlyticsDto, int indexItemGoogle, double relevanceConf) throws ParserConfigurationException, SAXException, IOException {
 		logger.debug("MapperTextAlyticsXmlToDto.map");
 		Document doc;
@@ -77,7 +93,7 @@ public class MapperTextAlyticsXmlToDto {
         				if(!itemFound) {
         					//logger.debug("attribute not found");
         					//add the item on attributes for  final result
-        					int idNewAttribute = resultsTextAlyticsDto.getAttributesDto().size()+1;
+        					int idNewAttribute = resultsTextAlyticsDto.getAttributesDto().size() + 1;//because the index will start by 1
         					resultsTextAlyticsDto.getAttributesDto().add(new AttributeDto(idNewAttribute, relevanceListAttribute.get(i).getForm(), relevanceListAttribute.get(i).getType()));
         					//add the context
         					resultsTextAlyticsDto.getContextDto().add(new RelationDto(indexItemGoogle, idNewAttribute ));
@@ -93,6 +109,12 @@ public class MapperTextAlyticsXmlToDto {
         }
 	}
 	
+	/**
+	 * Extracts the relvant attributes
+	 * @param temporalList
+	 * @param relevanceConf
+	 * @return List<AttributeDto>
+	 */
 	private List<AttributeDto> extractRelevanceListAttribute(List<AttributeDto> temporalList, double relevanceConf) {
 		logger.debug("MapperTextAlyticsXmlToDto.extractRelevanceListAttribute");
 		logger.debug("Temporal list In:");
@@ -143,6 +165,11 @@ public class MapperTextAlyticsXmlToDto {
 		return relevanceListAttribute;
 	}
 	
+	/**
+	 * Extract a temporal list before to extract the relevants
+	 * @param sentence
+	 * @param temporalListAttribute
+	 */
 	private void extractTemporalListAttribute(Node sentence, List<AttributeDto> temporalListAttribute) {
 		
 		NodeList tokens_list = sentence.getChildNodes();

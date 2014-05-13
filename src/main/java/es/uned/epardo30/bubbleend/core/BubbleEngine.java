@@ -20,28 +20,43 @@ import es.uned.epardo30.bubbleend.externalresource.textalytics.dto.RelationDto;
 import es.uned.epardo30.bubbleend.externalresource.textalytics.dto.ResultsTextAlyticsDto;
 import es.uned.epardo30.bubbleend.externalresource.textalytics.mapper.MapperTextAlyticsXmlToDto;
 
+/**
+ * 
+ * This class executes the bubble workflow going through different stages: 
+ * 		1- Call google client in order to get the results from google engine.
+ *      2- Call textalytics client to analyse the syntactics concepts for each google result.
+ *      3- Call afc client to get the final lattice  
+ * 
+ * @author eduardo.guillen
+ *
+ */
 public class BubbleEngine {
 	
 	static Logger logger = Logger.getLogger(BubbleEngine.class);
 	
+	/**
+	 * Execute the main workflow, starting with the filter string received from bubble GUI , this method returns the lattice
+	 * which will be sent to GUI. 
+	 * 
+	 * @param textSearchFilter
+	 * @param googleClient
+	 * @param textAlyticsClient
+	 * @param relevanceConf
+	 * @param afcClient
+	 * @return LatticeDto
+	 */
 	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double relevanceConf, AfcClient afcClient) {
-		//llamaremos al local method callToGoogleClient
-		//este nos devuelve un xml el cual tiene que ser procesadoo para obtener los descriptores y devuelve la entrada al AFC
-		//llamamos al local method callToAfcClient
-		//llamamos al metodo que procesa el XML de salida del AFC para quedarnos con la informacion que necesitamos y contruir el objeto Searching,
-		//que es el objeto JSON que pasaremos a la interface. 
-		
-			logger.debug("Initializing workflowEngine...");
-			ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter);
-			if(resultsGoogleDto.getItemsGoogleDto().isEmpty()) {
-				logger.debug("Return empty lattice");
-				return new LatticeDto();
-			}
-			else {
-				ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf);
-				LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient);
-				return latticeDto;
-			}
+		logger.debug("Initializing workflowEngine...");
+		ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter);
+		if(resultsGoogleDto.getItemsGoogleDto().isEmpty()) {
+			logger.debug("Return empty lattice");
+			return new LatticeDto();
+		}
+		else {
+			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf);
+			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient);
+			return latticeDto;
+		}
 
 	}
 	
@@ -50,7 +65,7 @@ public class BubbleEngine {
 	 * 
 	 * @param googleClient
 	 * @param textSearchFilter
-	 * @return
+	 * @return ResultsGoogleDto
 	 */
 	private ResultsGoogleDto callToGoogleClient(GoogleClient googleClient, String textSearchFilter) {
 		//calling to resources.GoogleClient service
@@ -146,6 +161,19 @@ public class BubbleEngine {
 		}
 	}
 	
+	/**
+	 * Client to call AFC Service which return lattice on xml format. 
+	 * There are three steps:
+	 * 		- MapperAfcDtoToXml: Mapping to create the xml entrance to afc service
+	 * 		- Call to afc service: Return the lattice on xml format 
+	 * 		- MapperAfcXmlToDto: Transform the lattice from xml to dto format
+ 
+	 * 
+	 * @param resultsGoogleDto
+	 * @param resultsTextAlyticsDto
+	 * @param afcClient
+	 * @return LatticeDto
+	 */
 	private LatticeDto callToAfcClient(ResultsGoogleDto resultsGoogleDto, ResultsTextAlyticsDto resultsTextAlyticsDto, AfcClient afcClient) {
 		MapperAfcDtoToXml mapperAfcDtoToXml = new MapperAfcDtoToXml();
 		MapperAfcXmlToDto mapperAfcXmlToDto = new MapperAfcXmlToDto();
@@ -164,9 +192,5 @@ public class BubbleEngine {
 			mapperAfcXmlToDto = null;
 		}
 	}
-	
-	
-	
-	
 
 }

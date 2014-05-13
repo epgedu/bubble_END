@@ -21,8 +21,16 @@ import org.hibernate.validator.constraints.NotEmpty;
  * This means the configuration class can use all of Jackson’s object-mapping annotations.
  * The validation of @NotEmpty is handled by Hibernate Validator, which has a wide range of built-in constraints for you to use.
  * 
+ * The parameters provide the setting for:
+ *      - HTTP-specific options
+ *      - Logging (console and file)
+ *      - setting external resource google service search
+ *      - setting external resource textalytics
+ *      - setting external resource afc
+ *      
  * @author Eduardo.Guillen
- *
+ * 
+ * 
  */
 public class BubbleEndPointConfiguation extends Configuration{
 	

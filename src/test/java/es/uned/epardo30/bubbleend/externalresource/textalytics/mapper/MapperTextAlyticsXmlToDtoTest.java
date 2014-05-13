@@ -20,6 +20,7 @@ import es.uned.epardo30.bubbleend.externalresource.textalytics.dto.ResultsTextAl
 
 /**
  * Unit test for MapperTextAlyticsXmlToDto
+ * We are testing the mapping between the xml file returned from TextAlytics service toward Dto object
  * 
  * @author eduardo.guillen
  *
@@ -51,6 +52,11 @@ public class MapperTextAlyticsXmlToDtoTest {
 		assertThat(resultsTextAlyticsHope).isEqualTo(resultsTextAlyticsDto);
 	}
 	
+	/**
+	 * Getting the external xml file which will be used as entrance to mapping method
+	 * @return String
+	 * @throws IOException
+	 */
 	private String getResource() throws IOException {
 		InputStream resourceIS =	this.getClass().getResourceAsStream("/xml/textAlyticsResponse.xml");
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resourceIS));

@@ -1,5 +1,10 @@
 package es.uned.epardo30.bubbleend.externalresource.textalytics.dto;
 
+/**
+ * Represents the relations between the objects (returned from google service) and the attributes (syntactic concepts) extracted for each object from textanalytics 
+ * @author eduardo.guillen
+ *
+ */
 public class RelationDto {
 	
 	private int idObject;

@@ -2,7 +2,7 @@ package es.uned.epardo30.bubbleend.externalresource.afc.dto;
 
 /**
  * 
- * TODO
+ * Represents the content of an object which is used to create the lattice on afc service. id to identify the object.
  * 
  * @author Eduardo.Guillen
  *

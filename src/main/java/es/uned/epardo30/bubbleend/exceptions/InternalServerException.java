@@ -6,7 +6,12 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-
+/**
+ * Wrap an internal server exception during the backend processing to http response with code 500 
+ *  
+ * @author eduardo.guillen
+ *
+ */
 public class InternalServerException extends WebApplicationException {
 	
 	

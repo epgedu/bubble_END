@@ -11,14 +11,20 @@ import es.uned.epardo30.bubbleend.exceptions.InternalServerException;
 import es.uned.epardo30.bubbleend.externalresource.google.dto.ItemGoogleDto;
 import es.uned.epardo30.bubbleend.externalresource.google.dto.ResultsGoogleDto;
 
+/**
+ * Mapping the json object which is returned from google service to dto object. This dto object will be used to create the entrance to afc service and textalytics service
+ * 
+ * @author eduardo.guillen
+ *
+ */
 public class MapperGoogleJsonToDto {
 
 	private static Logger logger = Logger.getLogger(MapperGoogleJsonToDto.class);
 	
 	/**
-	 * Process json object in order to get the input for syntactic scanner 
+	 * Process json object in order to get the dto object 
 	 * @param googleResultJson
-	 * @return 
+	 * @return ResultsGoogleDto
 	 */
 	public ResultsGoogleDto map(JSONObject googleResultJson) {
 		logger.debug("mapping google response from json objetc to dto...");

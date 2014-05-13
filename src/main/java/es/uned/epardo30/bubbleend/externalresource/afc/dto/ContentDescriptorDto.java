@@ -1,5 +1,11 @@
 package es.uned.epardo30.bubbleend.externalresource.afc.dto;
 
+/**
+ * Represents the content of a descriptor which is used to create the lattice on afc service.
+ * 		
+ * @author eduardo.guillen
+ *
+ */
 public class ContentDescriptorDto {
 
 	private String id;

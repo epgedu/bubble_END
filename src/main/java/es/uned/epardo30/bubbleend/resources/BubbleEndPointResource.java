@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  * Dropwizard has one such provider built in which allows for producing and consuming Java objects as JSON objects. 
  * The provider writes out the JSON and the client receives a 200 OK response with a content type of application/json.
  * 
- * We don't need to manage the cocncurrent access, due to we don't have shared resources 
+ * We don't need to manage the concurrent access, due to we don't have shared resources 
  * 
  * @author Eduardo.Guillen
  *

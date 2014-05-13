@@ -10,9 +10,13 @@ import es.uned.epardo30.bubbleend.resources.BubbleEndPointResource;
 
 /**
  * Check the correct status of Bubble end point service. 
- * We simulate the workflow:
- * 		1- calling to google service search
- *      2- processing reponse google service
+ *  We simulate the workflow calling the workflowEngine method. Previously, we've inserted the dependencies (clients web and search text filter)
+ * 	
+ * This testing method is provided by dropwizard framework in order to check the deployed resource on the service. In our case, we just publish one 
+ * resource, "bubble search" therefore we have one health check. This method is not a unit test, due to we are not testing the internal code, but
+ * we are testing:
+ * 		- The resource is listening
+ *      - The communication among the different external resources is correct  	
  *      
  * @author Eduardo.Guillen
  *

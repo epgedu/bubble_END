@@ -12,10 +12,18 @@ public class ResultsGoogleDto {
 	
 	private List<ItemGoogleDto> itemsGoogleDto;
 	
+	/**
+	 * 
+	 * @param itemsGoogleDto :  ArrayList<ItemGoogleDto> List where the items will be saved
+	 */
 	public ResultsGoogleDto(ArrayList<ItemGoogleDto> itemsGoogleDto) {
 		this.itemsGoogleDto = itemsGoogleDto;
 	}
-
+	
+	/**
+	 * Get all items saved in ResultGoogleDto
+	 * @return List<ItemGoogleDto>
+	 */
 	public List<ItemGoogleDto> getItemsGoogleDto() {
 		return itemsGoogleDto;
 	}
