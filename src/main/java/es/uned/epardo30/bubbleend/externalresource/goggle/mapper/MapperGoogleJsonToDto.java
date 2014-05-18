@@ -45,19 +45,19 @@ public class MapperGoogleJsonToDto {
 			//process every item
 			//Iterator<JSONObject> itemsJson = ((List<JSONObject>) items).iterator();
 			String title;
-			String htmlFormattedUrl;
+			String link;
 			String snnipet;
 			for(int i=0; i<items.length(); i++) {
 				JSONObject item = items.getJSONObject(i);
 				//saved the item title
 				title = item.getString("title");
 				//save the url
-				htmlFormattedUrl = item.getString("formattedUrl");
+				link = item.getString("link");
 				//save the snnipet
 				snnipet = item.getString("snippet");
 				
 				//saved the data on dto results
-				resultsGoogleDto.getItemsGoogleDto().add(new ItemGoogleDto(title, htmlFormattedUrl, snnipet));
+				resultsGoogleDto.getItemsGoogleDto().add(new ItemGoogleDto(title, link, snnipet));
 			}
 			
 			return resultsGoogleDto;
