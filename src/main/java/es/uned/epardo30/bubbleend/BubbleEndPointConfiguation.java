@@ -45,6 +45,9 @@ public class BubbleEndPointConfiguation extends Configuration{
 		return httpClient;
 	}
 
+	@NotNull
+	private int resultstoprocess;
+	
 	/*
 	 * Settings for external resource google service search
 	 */
@@ -111,6 +114,17 @@ public class BubbleEndPointConfiguation extends Configuration{
 	@NotEmpty
 	private String afcResourceContext;
 	
+	
+	@JsonProperty
+	public int getResultstoprocess() {
+		return resultstoprocess;
+	}
+
+	@JsonProperty
+	public void setResultstoprocess(int resultstoprocess) {
+		this.resultstoprocess = resultstoprocess;
+	}
+
 	@JsonProperty
 	public String getGoogleResourceIp() {
 		return googleResourceIp;

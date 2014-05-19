@@ -42,7 +42,7 @@ public class BubbleEndPointHealth extends HealthCheck {
 			logger.debug("checking external resource google service search");
 			bubbleEngine.workflowEngine("universidad uned", bubbleEndPointResource.getGoogleClient(), 
 										 bubbleEndPointResource.getTextAlyticsClient(), bubbleEndPointResource.getTextAlyticsRelevance(),
-										 bubbleEndPointResource.getAfcClient());
+										 bubbleEndPointResource.getAfcClient(), bubbleEndPointResource.getResultsToProcess());
 			
 			logger.debug("Health Check completed!!!");
 	        return Result.healthy();	

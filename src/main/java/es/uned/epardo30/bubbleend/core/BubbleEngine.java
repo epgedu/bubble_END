@@ -45,7 +45,7 @@ public class BubbleEngine {
 	 * @param afcClient
 	 * @return LatticeDto
 	 */
-	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double relevanceConf, AfcClient afcClient) {
+	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double relevanceConf, AfcClient afcClient, int resultsToProcess) {
 		logger.debug("Initializing workflowEngine...");
 		ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter);
 		if(resultsGoogleDto.getItemsGoogleDto().isEmpty()) {
@@ -53,7 +53,7 @@ public class BubbleEngine {
 			return new LatticeDto();
 		}
 		else {
-			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf);
+			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf, resultsToProcess);
 			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient);
 			return latticeDto;
 		}
@@ -92,7 +92,7 @@ public class BubbleEngine {
 	 * @param resultsGoogleDto
 	 * @param textAlyticsClient 
 	 */
-	public ResultsTextAlyticsDto callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto, TextAlyticsClient textAlyticsClient, double relevanceConf) {
+	public ResultsTextAlyticsDto callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto, TextAlyticsClient textAlyticsClient, double relevanceConf, int resultsToProcess) {
 		logger.debug("BubbleEngine.callTextalyticsProcess");
 		ItemGoogleDto item;
 		String textToSend;
@@ -111,7 +111,7 @@ public class BubbleEngine {
 				maxLoopTextAlytics = 3;
 			}
 			else {
-				maxLoopTextAlytics = resultsGoogleDto.getItemsGoogleDto().size();
+				maxLoopTextAlytics = resultsToProcess;
 			}
 			
 			for (int i = 0; i < maxLoopTextAlytics; i++) {

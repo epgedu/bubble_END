@@ -63,14 +63,18 @@ public class BubbleEndPointResource {
     //textAlytics rekevance
     private double textAlyticsRelevance;
     
+    //amount of result to process
+    private int resultsToProcess;
+    
     //afc client
     private final AfcClient afcClient;
 
-    public BubbleEndPointResource(GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double textAlyticsRelevance, AfcClient afcClient) {
+    public BubbleEndPointResource(GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double textAlyticsRelevance, int resultsToProcess, AfcClient afcClient) {
     	this.googleClient = googleClient;
     	this.textAlyticsClient = textAlyticsClient;
     	this.textAlyticsRelevance = textAlyticsRelevance;
     	this.afcClient = afcClient;
+    	this.resultsToProcess = resultsToProcess;
     }
     
     public GoogleClient getGoogleClient() {
@@ -88,6 +92,10 @@ public class BubbleEndPointResource {
     public AfcClient getAfcClient() {
     	return afcClient;
     }
+    
+    public int getResultsToProcess() {
+		return resultsToProcess;
+	}
 
 	/**
      * Called method when the request to /search-bubble is GET
@@ -120,7 +128,7 @@ public class BubbleEndPointResource {
     	 */
     	try {
     		bubbleEngine = new BubbleEngine();
-    		return bubbleEngine.workflowEngine(textFilter, googleClient, textAlyticsClient, textAlyticsRelevance, afcClient);
+    		return bubbleEngine.workflowEngine(textFilter, googleClient, textAlyticsClient, textAlyticsRelevance, afcClient, resultsToProcess);
         }
     	catch(WebApplicationException webApplicationException) {
     		logger.error("Exception on searchBubble. Status response: "+webApplicationException.getResponse().getStatus());

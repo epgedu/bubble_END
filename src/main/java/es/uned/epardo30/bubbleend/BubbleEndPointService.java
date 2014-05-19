@@ -85,11 +85,11 @@ public class BubbleEndPointService extends Service<BubbleEndPointConfiguation> {
         final AfcClient afcClient = new AfcClient(client, configuration.getAfcResourceIp(), configuration.getAfcResourcePort(), configuration.getAfcResourceProtocol(), configuration.getAfcResourceContext());
         
         logger.debug("Adding Bubble resource...");
-        environment.addResource(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance(), afcClient));
+        environment.addResource(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance(), configuration.getResultstoprocess(), afcClient));
     	
         
         logger.debug("Running the health checking...");
-        environment.addHealthCheck(new BubbleEndPointHealth(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance(), afcClient)));
+        environment.addHealthCheck(new BubbleEndPointHealth(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance(), configuration.getResultstoprocess(), afcClient)));
     	
     	logger.debug("add filter to environment modifying the original paramters...");
     	environment.addFilter(CrossOriginFilter.class, "*").setInitParam("allowedOrigins", "*").setInitParam("allowedMethods", "GET,POST,DELETE,PUT,HEAD").setInitParam("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
