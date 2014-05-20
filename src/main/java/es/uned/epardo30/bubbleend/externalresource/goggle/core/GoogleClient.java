@@ -65,6 +65,8 @@ public class GoogleClient {
 	 */
 	public JSONObject getResource(String textSearchFilter) {
 		logger.debug("Google.client.getResource()...");
+		client.setConnectTimeout(100000);
+		client.setReadTimeout(100000);
 		
 		//to change spaces to "+" symbol
 		textSearchFilter = textSearchFilter.replace(" ", "+");

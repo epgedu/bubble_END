@@ -113,6 +113,9 @@ public class BubbleEngine {
 			else {
 				maxLoopTextAlytics = resultsToProcess;
 			}
+			if(resultsGoogleDto.getItemsGoogleDto().size() < maxLoopTextAlytics) {
+				maxLoopTextAlytics = resultsGoogleDto.getItemsGoogleDto().size();
+			}
 			
 			for (int i = 0; i < maxLoopTextAlytics; i++) {
 				item = resultsGoogleDto.getItemsGoogleDto().get(i);
@@ -135,7 +138,7 @@ public class BubbleEngine {
 				logger.debug(resultsTextAlyticsDto.getAttributesDto().get(i).getType());
 			}
 			logger.debug("objects:");
-			for(int i=0; i<resultsGoogleDto.getItemsGoogleDto().size(); i++) {
+			for(int i=0; i<maxLoopTextAlytics; i++) {
 				logger.debug(i);
 				logger.debug(resultsGoogleDto.getItemsGoogleDto().get(i).getTitle());
 				logger.debug(resultsGoogleDto.getItemsGoogleDto().get(i).getSnnipet());
