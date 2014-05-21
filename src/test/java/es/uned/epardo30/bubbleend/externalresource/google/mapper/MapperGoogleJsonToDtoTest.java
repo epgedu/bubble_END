@@ -28,7 +28,8 @@ public class MapperGoogleJsonToDtoTest {
 		String googleResponseString = getResource();
 		JSONObject googleResponseJson = new JSONObject(googleResponseString);
 		MapperGoogleJsonToDto mapperGoogleJsonToDto = new MapperGoogleJsonToDto();
-		ResultsGoogleDto resultsGoogleDto = mapperGoogleJsonToDto.map(googleResponseJson);
+		ResultsGoogleDto resultsGoogleDto = new ResultsGoogleDto(new ArrayList<ItemGoogleDto>()); 
+		mapperGoogleJsonToDto.map(googleResponseJson, resultsGoogleDto);
 		
 		ResultsGoogleDto resultHope = new ResultsGoogleDto(new ArrayList<ItemGoogleDto>());
 		resultHope.getItemsGoogleDto().add(new ItemGoogleDto("title del primer resultado", "url del primer resultado", "snippet del primer resultado"));

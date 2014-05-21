@@ -1,6 +1,7 @@
 package es.uned.epardo30.bubbleend.externalresource.afc.core;
 
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 
 import org.apache.log4j.Logger;
@@ -57,7 +58,7 @@ public class AfcClient {
 	 * @return String
 	 * @throws UnsupportedEncodingException
 	 */
-	public String getResource(String entranceAfc) throws UnsupportedEncodingException {
+	public String getResource(String entranceAfc) throws UnsupportedEncodingException, SocketTimeoutException {
 		
 		logger.debug("AfcClient.getResource()...");
 		logger.debug("Xml sent to afc service: "+entranceAfc);

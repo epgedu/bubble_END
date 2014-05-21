@@ -1,7 +1,5 @@
 package es.uned.epardo30.bubbleend.externalresource.goggle.mapper;
 
-import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,12 +24,10 @@ public class MapperGoogleJsonToDto {
 	 * @param googleResultJson
 	 * @return ResultsGoogleDto
 	 */
-	public ResultsGoogleDto map(JSONObject googleResultJson) {
+	public ResultsGoogleDto map(JSONObject googleResultJson, ResultsGoogleDto resultsGoogleDto) {
 		logger.debug("mapping google response from json objetc to dto...");
 		try {
 			logger.debug("MapperGoogleJsonToDto.map...");
-			//init dto structure
-			ResultsGoogleDto resultsGoogleDto = new ResultsGoogleDto(new ArrayList<ItemGoogleDto>());
 			
 			JSONArray items;
 			try {
@@ -39,16 +35,16 @@ public class MapperGoogleJsonToDto {
 				items = (JSONArray) googleResultJson.get("items");
 			}
 			catch(JSONException jsonException) {
-				logger.info("Not found items from google service", jsonException);
+				logger.info("Not found items from google service for this request", jsonException);
 				return resultsGoogleDto;
 			}
 			//process every item
-			//Iterator<JSONObject> itemsJson = ((List<JSONObject>) items).iterator();
 			String title;
 			String link;
 			String snnipet;
+			JSONObject item;
 			for(int i=0; i<items.length(); i++) {
-				JSONObject item = items.getJSONObject(i);
+				item = items.getJSONObject(i);
 				//saved the item title
 				title = item.getString("title");
 				//save the url

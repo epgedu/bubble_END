@@ -46,7 +46,7 @@ public class BubbleEndPointConfiguation extends Configuration{
 	}
 
 	@NotNull
-	private int resultstoprocess;
+	private int queriesToProcess;
 	
 	/*
 	 * Settings for external resource google service search
@@ -116,13 +116,13 @@ public class BubbleEndPointConfiguation extends Configuration{
 	
 	
 	@JsonProperty
-	public int getResultstoprocess() {
-		return resultstoprocess;
+	public int getQueriesToProcess() {
+		return queriesToProcess;
 	}
 
 	@JsonProperty
-	public void setResultstoprocess(int resultstoprocess) {
-		this.resultstoprocess = resultstoprocess;
+	public void setQueriesToProcess(int queriesToProcess) {
+		this.queriesToProcess = queriesToProcess;
 	}
 
 	@JsonProperty

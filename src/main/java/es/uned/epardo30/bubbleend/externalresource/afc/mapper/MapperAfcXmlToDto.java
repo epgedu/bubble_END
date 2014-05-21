@@ -117,6 +117,9 @@ public class MapperAfcXmlToDto {
 			//create latticeDto object
 			LatticeDto latticeDto = new LatticeDto();
 			
+			//add the total number of results. Is is not the same than the amount of formal concepts. We need the amount of processed object to show on screen, the total results
+			latticeDto.setTotalResult(objectContent.getLength());
+			
 			//extract every formal concept from lattice
 			NodeList formalConcepts = lattice.getElementsByTagName("formalConcept");
 			logger.debug("Total no of formalConcept tag: "+lattice.getElementsByTagName("formalConcept").getLength());

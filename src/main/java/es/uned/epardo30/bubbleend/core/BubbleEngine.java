@@ -1,8 +1,10 @@
 package es.uned.epardo30.bubbleend.core;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.uned.epardo30.bubbleend.exceptions.InternalServerException;
@@ -45,15 +47,15 @@ public class BubbleEngine {
 	 * @param afcClient
 	 * @return LatticeDto
 	 */
-	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double relevanceConf, AfcClient afcClient, int resultsToProcess) {
+	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double relevanceConf, AfcClient afcClient, int queriesToProcess) {
 		logger.debug("Initializing workflowEngine...");
-		ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter);
+		ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter, queriesToProcess);
 		if(resultsGoogleDto.getItemsGoogleDto().isEmpty()) {
 			logger.debug("Return empty lattice");
 			return new LatticeDto();
 		}
 		else {
-			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf, resultsToProcess);
+			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf, queriesToProcess);
 			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient);
 			return latticeDto;
 		}
@@ -67,14 +69,43 @@ public class BubbleEngine {
 	 * @param textSearchFilter
 	 * @return ResultsGoogleDto
 	 */
-	private ResultsGoogleDto callToGoogleClient(GoogleClient googleClient, String textSearchFilter) {
+	private ResultsGoogleDto callToGoogleClient(GoogleClient googleClient, String textSearchFilter, int queriesToProcess) {
 		//calling to resources.GoogleClient service
 		MapperGoogleJsonToDto mapperGoogleJsonToDto = new MapperGoogleJsonToDto();
-		JSONObject googleResponse;
+		JSONObject googleResponse = null;
+		ResultsGoogleDto resultsGoogleDto = new ResultsGoogleDto(new ArrayList<ItemGoogleDto>());
+		int connectionTry = 3; //3 opportunities for all requests to google
 		try {
 			logger.debug("BubbleEngine.CallToGoogleClient()...");
-			googleResponse = googleClient.getResource(textSearchFilter);
-			return mapperGoogleJsonToDto.map(googleResponse);
+			for(int i = 0; i < queriesToProcess; i++) {
+				try {
+					googleResponse = googleClient.getResource(textSearchFilter, i);
+					mapperGoogleJsonToDto.map(googleResponse, resultsGoogleDto);
+				}
+				catch(SocketTimeoutException socketTimeoutException) {
+					if(connectionTry > 0) {
+						connectionTry --;
+						i --; //try again
+						logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+					}
+					else {
+						logger.warn("No more chances...");
+						throw new InternalServerException("Timeout calling service google: "+socketTimeoutException.getMessage());
+					}
+				}
+				catch(JSONException exception) {
+					//if the exception is raised because of the google response is empty then we throw the exception
+					if(resultsGoogleDto.getItemsGoogleDto().isEmpty()) {
+						logger.error("JSONException on callToGoogleClient() method: ", exception);
+						throw new InternalServerException("JSONException on service google: "+exception.getMessage());
+					}
+					else {
+						//if the response is empty but it is not the first request, doesn't matter. One request for each 10 results
+						return resultsGoogleDto;
+					}
+				}
+			}
+			return resultsGoogleDto;
 		}
 		catch(Exception exception) {
 			logger.error("Exception on callToGoogleClient() method: ", exception);
@@ -92,7 +123,7 @@ public class BubbleEngine {
 	 * @param resultsGoogleDto
 	 * @param textAlyticsClient 
 	 */
-	public ResultsTextAlyticsDto callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto, TextAlyticsClient textAlyticsClient, double relevanceConf, int resultsToProcess) {
+	public ResultsTextAlyticsDto callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto, TextAlyticsClient textAlyticsClient, double relevanceConf, int queriesToProcess) {
 		logger.debug("BubbleEngine.callTextalyticsProcess");
 		ItemGoogleDto item;
 		String textToSend;
@@ -111,12 +142,16 @@ public class BubbleEngine {
 				maxLoopTextAlytics = 3;
 			}
 			else {
-				maxLoopTextAlytics = resultsToProcess;
+				//process 10 (results per query) * queriesToProcess parameter 
+				maxLoopTextAlytics = 10 * queriesToProcess;
 			}
+			
+			//maybe there are less than the wished amount
 			if(resultsGoogleDto.getItemsGoogleDto().size() < maxLoopTextAlytics) {
 				maxLoopTextAlytics = resultsGoogleDto.getItemsGoogleDto().size();
 			}
 			
+			int connectionTry = 3; //3 opportunities for all requests to textAlytics
 			for (int i = 0; i < maxLoopTextAlytics; i++) {
 				item = resultsGoogleDto.getItemsGoogleDto().get(i);
 				//join the tittle, snnipet and description
@@ -124,10 +159,23 @@ public class BubbleEngine {
 				if(!textToSend.isEmpty()) {
 					//if text to process is not empty for this object
 					//call the textAlytics service
-					String response = textAlyticsClient.getResource(textToSend);
-					//process the textAlytics response
-					logger.debug("Proccesing attributes for object: "+item.getTitle());
-					mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);
+					try {
+						String response = textAlyticsClient.getResource(textToSend);
+						//process the textAlytics response
+						logger.debug("Proccesing attributes for object: "+item.getTitle());
+						mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);
+					}
+					catch(SocketTimeoutException socketTimeoutException) {
+						if(connectionTry > 0) {
+							connectionTry --;
+							i --; //try again
+							logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+						}
+						else {
+							logger.warn("No more chances...");
+							throw new InternalServerException("Timeout calling service textAlytics: "+socketTimeoutException.getMessage());
+						}
+					}
 				}
 			}
 			logger.debug("out from textalytics process: ");
@@ -183,7 +231,25 @@ public class BubbleEngine {
 		try {
 			//mapping from ResultsTextAlyticsDto to xml file
 			String xmlString = mapperAfcDtoToXml.map(resultsGoogleDto, resultsTextAlyticsDto);
-			String afcResult = afcClient.getResource(xmlString);
+			int connectionTry = 3; //3 opportunities for all requests to afc service
+			String afcResult = null;
+			while (connectionTry > 0) {
+				try {
+					afcResult = afcClient.getResource(xmlString);
+					//no exceptions
+					connectionTry = 0;//don't try again
+				}
+				catch(SocketTimeoutException socketTimeoutException) {
+					if(connectionTry > 0) {
+						connectionTry --;
+						logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+					}
+					else {
+						logger.warn("No more chances...");
+						throw new InternalServerException("Timeout calling afc service: "+socketTimeoutException.getMessage());
+					}
+				}
+			}
 			return mapperAfcXmlToDto.map(afcResult);
 		}
 		catch(Exception exception) {

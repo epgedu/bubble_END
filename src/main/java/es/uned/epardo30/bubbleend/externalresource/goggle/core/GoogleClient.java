@@ -1,5 +1,7 @@
 package es.uned.epardo30.bubbleend.externalresource.goggle.core;
 
+import java.net.SocketTimeoutException;
+
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
@@ -63,7 +65,7 @@ public class GoogleClient {
 	 * @param textSearchFilter : The text was inserted by user and it's sent from bubble_GUI
 	 * @return JSONObject : Object contains the google results
 	 */
-	public JSONObject getResource(String textSearchFilter) {
+	public JSONObject getResource(String textSearchFilter, int initPage) throws SocketTimeoutException{
 		logger.debug("Google.client.getResource()...");
 		client.setConnectTimeout(100000);
 		client.setReadTimeout(100000);
@@ -71,7 +73,10 @@ public class GoogleClient {
 		//to change spaces to "+" symbol
 		textSearchFilter = textSearchFilter.replace(" ", "+");
 		
-		String url = this.googleResourceProtocol+"://"+this.host+":"+this.port+this.googleResourceContext+"?key="+this.googleApiKey+"&cx="+this.googleSearchEngineId+"&q="+textSearchFilter;
+		//start result list
+		int start = (initPage * 10) + 1;//10 results per query. Always beginning by 1. https://support.google.com/customsearch/answer/1361951?hl=en
+		
+		String url = this.googleResourceProtocol+"://"+this.host+":"+this.port+this.googleResourceContext+"?key="+this.googleApiKey+"&cx="+this.googleSearchEngineId+"&q="+textSearchFilter+"&start="+start;
 		logger.debug("url service google: "+url);
 		
 		//process the response

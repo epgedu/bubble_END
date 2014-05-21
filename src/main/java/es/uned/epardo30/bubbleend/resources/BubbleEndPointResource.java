@@ -63,18 +63,18 @@ public class BubbleEndPointResource {
     //textAlytics rekevance
     private double textAlyticsRelevance;
     
-    //amount of result to process
-    private int resultsToProcess;
+    //amount of result to process (10 per query)
+    private int queriesToProcess;
     
     //afc client
     private final AfcClient afcClient;
 
-    public BubbleEndPointResource(GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double textAlyticsRelevance, int resultsToProcess, AfcClient afcClient) {
+    public BubbleEndPointResource(GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double textAlyticsRelevance, int queriesToProcess, AfcClient afcClient) {
     	this.googleClient = googleClient;
     	this.textAlyticsClient = textAlyticsClient;
     	this.textAlyticsRelevance = textAlyticsRelevance;
     	this.afcClient = afcClient;
-    	this.resultsToProcess = resultsToProcess;
+    	this.queriesToProcess = queriesToProcess;
     }
     
     public GoogleClient getGoogleClient() {
@@ -93,8 +93,8 @@ public class BubbleEndPointResource {
     	return afcClient;
     }
     
-    public int getResultsToProcess() {
-		return resultsToProcess;
+    public int getQueriesToProcess() {
+		return queriesToProcess;
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class BubbleEndPointResource {
     	 */
     	try {
     		bubbleEngine = new BubbleEngine();
-    		return bubbleEngine.workflowEngine(textFilter, googleClient, textAlyticsClient, textAlyticsRelevance, afcClient, resultsToProcess);
+    		return bubbleEngine.workflowEngine(textFilter, googleClient, textAlyticsClient, textAlyticsRelevance, afcClient, queriesToProcess);
         }
     	catch(WebApplicationException webApplicationException) {
     		logger.error("Exception on searchBubble. Status response: "+webApplicationException.getResponse().getStatus());

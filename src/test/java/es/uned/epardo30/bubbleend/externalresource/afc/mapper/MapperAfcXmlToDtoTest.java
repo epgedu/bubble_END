@@ -152,7 +152,10 @@ public class MapperAfcXmlToDtoTest {
 		//not children
 		//include the formal concept to lattice
 		latticeHope.getContentObjects().add(formalConceptDto);
-	
+		
+		//we hope 0 objetoContenido tags (just during the test)
+		latticeDto.setTotalResult(0);
+		
 		//compare the objects
 		assertThat(latticeHope).isEqualTo(latticeDto);
 	}
