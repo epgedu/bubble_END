@@ -4,7 +4,7 @@
 
   <groupId>es.uned.epardo30.project_bubble</groupId>
   <artifactId>bubble_end</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <packaging>jar</packaging>
 
   <name>bubble_end</name>

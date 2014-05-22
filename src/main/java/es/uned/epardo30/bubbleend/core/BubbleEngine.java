@@ -85,11 +85,11 @@ public class BubbleEngine {
 					mapperGoogleJsonToDto.map(googleResponse, resultsGoogleDto);
 				}
 				catch(ClientHandlerException clientHandlerException) {
-					if(clientHandlerException.getCause().equals(SocketTimeoutException.class)) {
+					if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class)) {
 						if(connectionTry > 0) {
 							connectionTry --;
 							i --; //try again
-							logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+							logger.warn("SocketTimeoutException in google call...Try connection again. There are chances left: "+connectionTry);
 						}
 						else {
 							logger.warn("No more chances...");
@@ -174,11 +174,11 @@ public class BubbleEngine {
 						mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);
 					}
 					catch(ClientHandlerException clientHandlerException) {
-						if(clientHandlerException.getCause().equals(SocketTimeoutException.class)) {
+						if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class)) {
 							if(connectionTry > 0) {
 								connectionTry --;
 								i --; //try again
-								logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+								logger.warn("SocketTimeoutException on textAlytic call...Try connection again. There are chances left: "+connectionTry);
 							}
 							else {
 								logger.warn("No more chances...");
@@ -254,10 +254,10 @@ public class BubbleEngine {
 					connectionTry = 0;//don't try again
 				}
 				catch(ClientHandlerException clientHandlerException) {
-					if(clientHandlerException.getCause().equals(SocketTimeoutException.class)) {
+					if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class)) {
 						if(connectionTry > 0) {
 							connectionTry --;
-							logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+							logger.warn("SocketTimeoutException on afc call...Try connection again. There are chances left: "+connectionTry);
 						}
 						else {
 							logger.warn("No more chances...");
