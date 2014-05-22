@@ -58,7 +58,7 @@ public class BubbleEngine {
 		}
 		else {
 			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf, queriesToProcess);
-			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient);
+			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient, queriesToProcess);
 			return latticeDto;
 		}
 
@@ -140,14 +140,13 @@ public class BubbleEngine {
 		try {
 			mapperTextAlyticsXmlToDto = new MapperTextAlyticsXmlToDto();
 			resultsTextAlyticsDto = new ResultsTextAlyticsDto();
-			//resultsTextAlyticsDto.setObjectsDto(new ArrayList<ObjectDto>());
 			resultsTextAlyticsDto.setAttributesDto(new ArrayList<AttributeDto>());
 			resultsTextAlyticsDto.setContextDto(new ArrayList<RelationDto>());
 			
 			int maxLoopTextAlytics;
 			if(logger.isDebugEnabled()) {
-				//just process the three first results from google
-				maxLoopTextAlytics = 3;
+				//just process one request (10 results)
+				maxLoopTextAlytics = 10; 
 			}
 			else {
 				//process 10 (results per query) * queriesToProcess parameter 
@@ -239,12 +238,12 @@ public class BubbleEngine {
 	 * @param afcClient
 	 * @return LatticeDto
 	 */
-	private LatticeDto callToAfcClient(ResultsGoogleDto resultsGoogleDto, ResultsTextAlyticsDto resultsTextAlyticsDto, AfcClient afcClient) {
+	private LatticeDto callToAfcClient(ResultsGoogleDto resultsGoogleDto, ResultsTextAlyticsDto resultsTextAlyticsDto, AfcClient afcClient, int queriesToProcess) {
 		MapperAfcDtoToXml mapperAfcDtoToXml = new MapperAfcDtoToXml();
 		MapperAfcXmlToDto mapperAfcXmlToDto = new MapperAfcXmlToDto();
 		try {
 			//mapping from ResultsTextAlyticsDto to xml file
-			String xmlString = mapperAfcDtoToXml.map(resultsGoogleDto, resultsTextAlyticsDto);
+			String xmlString = mapperAfcDtoToXml.map(resultsGoogleDto, resultsTextAlyticsDto, queriesToProcess);
 			int connectionTry = 3; //3 opportunities for all requests to afc service
 			String afcResult = null;
 			while (connectionTry > 0) {

@@ -46,7 +46,7 @@ public class MapperAfcDtoToXml {
 	 * @see ResultsTextAlyticsDto
 	 * 
 	 */
-	public String map(ResultsGoogleDto resultsGoogleDto, ResultsTextAlyticsDto resultsTextAlyticsDto) throws ParserConfigurationException, TransformerException, IOException {
+	public String map(ResultsGoogleDto resultsGoogleDto, ResultsTextAlyticsDto resultsTextAlyticsDto, int queriesToProcess) throws ParserConfigurationException, TransformerException, IOException {
 		logger.debug("MapperAfcDtoToXml.map...");
 		
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -66,14 +66,22 @@ public class MapperAfcDtoToXml {
 		int idObject = 1;
 		int maxLoopObjects;
 		if(logger.isDebugEnabled()) {
-			//just process the three first results from google
-			maxLoopObjects = 3;
+			//just process one request (10 results)
+			maxLoopObjects = 10;
 		}
 		else {
+			//process 10 (results per query) * queriesToProcess parameter 
+			maxLoopObjects = 10 * queriesToProcess;
+		}
+		
+		//maybe there are less than the wished amount
+		if(resultsGoogleDto.getItemsGoogleDto().size() < maxLoopObjects) {
 			maxLoopObjects = resultsGoogleDto.getItemsGoogleDto().size();
 		}
 		ItemGoogleDto objectDto = null;
 		for(int i=0; i<maxLoopObjects; i++) {
+			
+			
 			objectDto = resultsGoogleDto.getItemsGoogleDto().get(i);
 			object = doc.createElement("objeto");
 			object.setAttribute("id", "o"+idObject);
@@ -101,6 +109,7 @@ public class MapperAfcDtoToXml {
 		Element relation;
 		Element objectRelation;
 		Element descriptorRelation;
+		
 		for (RelationDto relationDto : resultsTextAlyticsDto.getContextDto()) {
 			relation = doc.createElement("relacion");
 			//object element for the relation
@@ -112,7 +121,6 @@ public class MapperAfcDtoToXml {
 			descriptorRelation.setAttribute("idref", "d"+relationDto.getIdDescriptor());
 			relation.appendChild(descriptorRelation);
 			context.appendChild(relation);
-			
 		}
 		afc.appendChild(context);
 		rootElement.appendChild(afc);
@@ -135,10 +143,13 @@ public class MapperAfcDtoToXml {
             Writer out = new StringWriter();
             XMLSerializer serializer = new XMLSerializer(out, format);
             serializer.serialize(document);
-
             return out.toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+	
+	
 }
+
+

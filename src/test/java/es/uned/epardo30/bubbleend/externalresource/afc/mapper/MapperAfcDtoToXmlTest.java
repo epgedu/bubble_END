@@ -59,7 +59,8 @@ public class MapperAfcDtoToXmlTest {
 		resultsTextAlyticsDto.setAttributesDto(attributeDtos);
 		resultsTextAlyticsDto.setContextDto(relationDtos);
 		
-		String xmlRequestAfc = mapperAfcDtoToXml.map(resultsGoogleDto, resultsTextAlyticsDto);
+		int queriesToProcess = 1; //just checking 3 objects
+		String xmlRequestAfc = mapperAfcDtoToXml.map(resultsGoogleDto, resultsTextAlyticsDto, queriesToProcess);
 		String xmlRequesHope = getResource();
 		
 		assertThat(xmlRequestAfc).isEqualTo(xmlRequesHope);
