@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.sun.jersey.api.client.ClientHandlerException;
+
 import es.uned.epardo30.bubbleend.exceptions.InternalServerException;
 import es.uned.epardo30.bubbleend.externalresource.afc.core.AfcClient;
 import es.uned.epardo30.bubbleend.externalresource.afc.dto.LatticeDto;
@@ -82,15 +84,21 @@ public class BubbleEngine {
 					googleResponse = googleClient.getResource(textSearchFilter, i);
 					mapperGoogleJsonToDto.map(googleResponse, resultsGoogleDto);
 				}
-				catch(SocketTimeoutException socketTimeoutException) {
-					if(connectionTry > 0) {
-						connectionTry --;
-						i --; //try again
-						logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+				catch(ClientHandlerException clientHandlerException) {
+					if(clientHandlerException.getCause().equals(SocketTimeoutException.class)) {
+						if(connectionTry > 0) {
+							connectionTry --;
+							i --; //try again
+							logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+						}
+						else {
+							logger.warn("No more chances...");
+							throw new InternalServerException("Timeout calling service google: "+clientHandlerException.getMessage());
+						}
 					}
 					else {
-						logger.warn("No more chances...");
-						throw new InternalServerException("Timeout calling service google: "+socketTimeoutException.getMessage());
+						logger.error("ClientHandlerException on callToGoogleClient() method: ", clientHandlerException);
+						throw new InternalServerException("ClientHandlerException on service google: "+clientHandlerException.getMessage());
 					}
 				}
 				catch(JSONException exception) {
@@ -165,15 +173,21 @@ public class BubbleEngine {
 						logger.debug("Proccesing attributes for object: "+item.getTitle());
 						mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);
 					}
-					catch(SocketTimeoutException socketTimeoutException) {
-						if(connectionTry > 0) {
-							connectionTry --;
-							i --; //try again
-							logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+					catch(ClientHandlerException clientHandlerException) {
+						if(clientHandlerException.getCause().equals(SocketTimeoutException.class)) {
+							if(connectionTry > 0) {
+								connectionTry --;
+								i --; //try again
+								logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+							}
+							else {
+								logger.warn("No more chances...");
+								throw new InternalServerException("Timeout calling service textAlytics: "+clientHandlerException.getMessage());
+							}
 						}
 						else {
-							logger.warn("No more chances...");
-							throw new InternalServerException("Timeout calling service textAlytics: "+socketTimeoutException.getMessage());
+							logger.error("ClientHandlerException on callTextalyticsProcess() method: ", clientHandlerException);
+							throw new InternalServerException("ClientHandlerException on service textAlytics: "+clientHandlerException.getMessage());
 						}
 					}
 				}
@@ -239,14 +253,20 @@ public class BubbleEngine {
 					//no exceptions
 					connectionTry = 0;//don't try again
 				}
-				catch(SocketTimeoutException socketTimeoutException) {
-					if(connectionTry > 0) {
-						connectionTry --;
-						logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+				catch(ClientHandlerException clientHandlerException) {
+					if(clientHandlerException.getCause().equals(SocketTimeoutException.class)) {
+						if(connectionTry > 0) {
+							connectionTry --;
+							logger.warn("SocketTimeoutException...Try connection again. There are chances left: "+connectionTry);
+						}
+						else {
+							logger.warn("No more chances...");
+							throw new InternalServerException("Timeout calling afc service: "+clientHandlerException.getMessage());
+						}
 					}
 					else {
-						logger.warn("No more chances...");
-						throw new InternalServerException("Timeout calling afc service: "+socketTimeoutException.getMessage());
+						logger.error("ClientHandlerException on callToAfcClient() method: ", clientHandlerException);
+						throw new InternalServerException("ClientHandlerException on service afc: "+clientHandlerException.getMessage());
 					}
 				}
 			}
