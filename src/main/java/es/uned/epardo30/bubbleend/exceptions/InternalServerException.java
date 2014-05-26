@@ -22,7 +22,7 @@ public class InternalServerException extends WebApplicationException {
 	*/
 	public InternalServerException(String message) {
 		super(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).type(MediaType.APPLICATION_JSON).build());
-		logger.debug("Bilding Internal Server Exception...");
+		logger.debug("Building Internal Server Exception...");
 	}
 	
 

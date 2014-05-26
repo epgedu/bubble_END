@@ -3,12 +3,15 @@ package es.uned.epardo30.bubbleend.core;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+import javax.naming.LimitExceededException;
+
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 
+import es.uned.epardo30.bubbleend.exceptions.DailyLimitExceededGoogleException;
 import es.uned.epardo30.bubbleend.exceptions.InternalServerException;
 import es.uned.epardo30.bubbleend.externalresource.afc.core.AfcClient;
 import es.uned.epardo30.bubbleend.externalresource.afc.dto.LatticeDto;
@@ -115,6 +118,12 @@ public class BubbleEngine {
 			}
 			return resultsGoogleDto;
 		}
+		catch(DailyLimitExceededGoogleException dailyLimitExceededGoogleException) {
+			throw dailyLimitExceededGoogleException;
+		}
+		catch(InternalServerException internalServerException) {
+			throw internalServerException;
+		}
 		catch(Exception exception) {
 			logger.error("Exception on callToGoogleClient() method: ", exception);
 			throw new InternalServerException("Exception on service google: "+exception.getMessage());
@@ -213,6 +222,9 @@ public class BubbleEngine {
 			return resultsTextAlyticsDto;
 			
 		}
+		catch(InternalServerException internalServerException) {
+			throw internalServerException;
+		}
 		catch(Exception exception) {
 			logger.error("Exception on callTextalyticsProcess() method: ", exception);
 			throw new InternalServerException("Exception on Textalytics process: "+exception.getMessage());
@@ -270,6 +282,9 @@ public class BubbleEngine {
 				}
 			}
 			return mapperAfcXmlToDto.map(afcResult);
+		}
+		catch(InternalServerException internalServerException) {
+			throw internalServerException;
 		}
 		catch(Exception exception) {
 			logger.error("Exception on callToAfcClient() method: ", exception);

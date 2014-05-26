@@ -9,6 +9,8 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+import es.uned.epardo30.bubbleend.exceptions.DailyLimitExceededGoogleException;
+
 
 /**
  * Client to call external resource google service search
@@ -84,6 +86,9 @@ public class GoogleClient {
 		
 		ClientResponse response = webResource.accept("application/json").type("application/json").get(ClientResponse.class);
 		if (response.getStatus() != 200) {
+			if(response.getStatus() == 403) {
+				throw new DailyLimitExceededGoogleException("Daily Limit Exceeded");
+			}
             throw new RuntimeException("Failed : HTTP error code : "+ response.getStatus());
 		}
 		String output = response.getEntity(String.class);
