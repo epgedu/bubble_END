@@ -76,7 +76,7 @@ public class BubbleEngine {
 		MapperGoogleJsonToDto mapperGoogleJsonToDto = new MapperGoogleJsonToDto();
 		JSONObject googleResponse = null;
 		ResultsGoogleDto resultsGoogleDto = new ResultsGoogleDto(new ArrayList<ItemGoogleDto>());
-		int connectionTry = 3; //3 opportunities for all requests to google
+		int connectionTry = 10; //10 opportunities for all requests to google
 		try {
 			logger.debug("BubbleEngine.CallToGoogleClient()...");
 			for(int i = 0; i < queriesToProcess; i++) {
@@ -158,7 +158,7 @@ public class BubbleEngine {
 				maxLoopTextAlytics = resultsGoogleDto.getItemsGoogleDto().size();
 			}
 			
-			int connectionTry = 3; //3 opportunities for all requests to textAlytics
+			int connectionTry = 10; //10 opportunities for all requests to textAlytics
 			for (int i = 0; i < maxLoopTextAlytics; i++) {
 				item = resultsGoogleDto.getItemsGoogleDto().get(i);
 				//join the tittle, snnipet and description
@@ -244,7 +244,7 @@ public class BubbleEngine {
 		try {
 			//mapping from ResultsTextAlyticsDto to xml file
 			String xmlString = mapperAfcDtoToXml.map(resultsGoogleDto, resultsTextAlyticsDto, queriesToProcess);
-			int connectionTry = 3; //3 opportunities for all requests to afc service
+			int connectionTry = 10; //10 opportunities for all requests to afc service
 			String afcResult = null;
 			while (connectionTry > 0) {
 				try {
