@@ -18,7 +18,6 @@ public class DailyLimitExceededGoogleException extends WebApplicationException{
 	/**
 	* Create a HTTP 403 (Forbidden HTTP status code) exception.
 	* @param message the String that is the entity of the 403 response.
-	 * @return 
 	*/
 	public DailyLimitExceededGoogleException(String message) {
 		super(Response.status(Response.Status.FORBIDDEN).entity(message).type(MediaType.APPLICATION_JSON).build());
