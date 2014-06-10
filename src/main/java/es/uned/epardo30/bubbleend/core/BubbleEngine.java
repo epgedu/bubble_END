@@ -3,14 +3,17 @@ package es.uned.epardo30.bubbleend.core;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
-import javax.naming.LimitExceededException;
-
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
+import com.yammer.dropwizard.client.JerseyClientBuilder;
+import com.yammer.dropwizard.config.Environment;
 
+import es.uned.epardo30.bubbleend.BubbleEndPointConfiguation;
 import es.uned.epardo30.bubbleend.exceptions.DailyLimitExceededGoogleException;
 import es.uned.epardo30.bubbleend.exceptions.InternalServerException;
 import es.uned.epardo30.bubbleend.externalresource.afc.core.AfcClient;
@@ -29,7 +32,8 @@ import es.uned.epardo30.bubbleend.externalresource.textalytics.mapper.MapperText
 
 /**
  * 
- * This class executes the bubble workflow going through different stages: 
+ * This class executes the bubble workflow going through different stages:
+ *      1- Create the clients (JerseyClient, GoogleClient, TextAlyticsClient, AfcClient) using the BubbleEndPointConfiguration and Environment class 
  * 		1- Call google client in order to get the results from google engine.
  *      2- Call textalytics client to analyse the syntactics concepts for each google result.
  *      3- Call afc client to get the final lattice  
@@ -42,30 +46,82 @@ public class BubbleEngine {
 	static Logger logger = Logger.getLogger(BubbleEngine.class);
 	
 	/**
+	 * com.sun.jersey.api.client.Client
+	 */
+	private Client client;
+	
+	/**
+	 * {@link GoogleClient}
+	 */
+	private GoogleClient googleClient;
+	
+	/**
+	 * {@link TextAlyticsClient}
+	 */
+	TextAlyticsClient textAlyticsClient;
+	
+	/**
+	 * {@link AfcClient}
+	 */
+	AfcClient afcClient;
+	
+	/**
 	 * Execute the main workflow, starting with the filter string received from bubble GUI , this method returns the lattice
 	 * which will be sent to GUI. 
 	 * 
 	 * @param textSearchFilter
-	 * @param googleClient
-	 * @param textAlyticsClient
-	 * @param relevanceConf
-	 * @param afcClient
+	 * @param configuration
+	 * @param environment
 	 * @return LatticeDto
 	 */
-	public LatticeDto workflowEngine(String textSearchFilter, GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double relevanceConf, AfcClient afcClient, int queriesToProcess) {
+	public LatticeDto workflowEngine(String textSearchFilter, BubbleEndPointConfiguation configuration, Environment environment) {
 		logger.debug("Initializing workflowEngine...");
-		ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter, queriesToProcess);
+		
+		this.createClients(configuration, environment);
+		
+		ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter, configuration.getQueriesToProcess());
 		if(resultsGoogleDto.getItemsGoogleDto().isEmpty()) {
 			logger.debug("Return empty lattice");
 			return new LatticeDto();
 		}
 		else {
-			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, relevanceConf, queriesToProcess);
-			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient, queriesToProcess);
+			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, configuration.getTextalyticsRelevance(), configuration.getQueriesToProcess());
+			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient, configuration.getQueriesToProcess());
 			return latticeDto;
 		}
 
 	}
+	
+	/**
+	 * Create the instances of clients which will be used during the workflow. When the workflow finishes, the clients will be cleaned
+	 * 
+	 * @param configuration
+	 * @param environment
+	 */
+	private void createClients(BubbleEndPointConfiguation configuration, Environment environment) {
+		
+		logger.debug("Creating client jersey to connect to external resources...");
+        client = new JerseyClientBuilder().using(configuration.getJerseyClientConfiguration()).using(environment).build();
+        
+        
+        logger.debug("Creating google client...");
+        googleClient = new GoogleClient(client, configuration.getGoogleResourceIp(), configuration.getGoogleResourcePort(), configuration.getGoogleApiKey(), 
+        											 configuration.getGoogleSearchEngineId(), configuration.getGoogleResourceProtocol(), configuration.getGoogleResourceContext());
+        
+        logger.debug("Creating textAlytics client...");
+        textAlyticsClient = new TextAlyticsClient(client, configuration.getTextalyticsResourceIp(),
+        																  configuration.getTextalyticsResourcePort(),
+        																  configuration.getTextalyticsKey(),
+        																  configuration.getTextalyticsResourceProtocol(),
+        																  configuration.getTextalyticsResourceContext(),
+        																  configuration.getTextalyticsLanguage());
+        
+        logger.debug("Creating afc client...");
+        afcClient = new AfcClient(client, configuration.getAfcResourceIp(), configuration.getAfcResourcePort(), configuration.getAfcResourceProtocol(), configuration.getAfcResourceContext());
+
+	}
+	
+	
 	
 	/**
 	 * Calling google client to get the result in Json format and mapping to ResultsGoogleDto format
@@ -88,7 +144,8 @@ public class BubbleEngine {
 					mapperGoogleJsonToDto.map(googleResponse, resultsGoogleDto);
 				}
 				catch(ClientHandlerException clientHandlerException) {
-					if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class)) {
+					if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class)|| 
+							clientHandlerException.getCause().getClass().equals(ConnectTimeoutException.class)) {
 						if(connectionTry > 0) {
 							connectionTry --;
 							i --; //try again
@@ -182,7 +239,8 @@ public class BubbleEngine {
 						mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);
 					}
 					catch(ClientHandlerException clientHandlerException) {
-						if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class)) {
+						if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class) || 
+								clientHandlerException.getCause().getClass().equals(ConnectTimeoutException.class) ) {
 							if(connectionTry > 0) {
 								connectionTry --;
 								i --; //try again
@@ -265,7 +323,8 @@ public class BubbleEngine {
 					connectionTry = 0;//don't try again
 				}
 				catch(ClientHandlerException clientHandlerException) {
-					if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class)) {
+					if(clientHandlerException.getCause().getClass().equals(SocketTimeoutException.class) || 
+							clientHandlerException.getCause().getClass().equals(ConnectTimeoutException.class)) {
 						if(connectionTry > 0) {
 							connectionTry --;
 							logger.warn("SocketTimeoutException on afc call...Try connection again. There are chances left: "+connectionTry);

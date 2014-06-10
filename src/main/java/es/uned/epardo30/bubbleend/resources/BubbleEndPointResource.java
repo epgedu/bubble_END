@@ -1,10 +1,8 @@
 package es.uned.epardo30.bubbleend.resources;
 
+import es.uned.epardo30.bubbleend.BubbleEndPointConfiguation;
 import es.uned.epardo30.bubbleend.core.BubbleEngine;
-import es.uned.epardo30.bubbleend.externalresource.afc.core.AfcClient;
 import es.uned.epardo30.bubbleend.externalresource.afc.dto.LatticeDto;
-import es.uned.epardo30.bubbleend.externalresource.goggle.core.GoogleClient;
-import es.uned.epardo30.bubbleend.externalresource.textalytics.core.TextAlyticsClient;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -15,6 +13,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+
+import com.yammer.dropwizard.config.Environment;
 
 /**
  * Jersey resources are the meat-and-potatoes of a Dropwizard service. 
@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  * 
  * #searchBubbles(Optional<String>) is the meat of this class, and it’s a fairly simple method. 
  * The @QueryParam("filter") annotation tells Jersey to map the filter parameter from the query
- * string to the filter parameter in the method. If the client sends a request to /bubble-search?filter="Winner league 2013",
+ * string to the filter parameter in the method. If the client sends a request to /bubble-search?text-filter="Winner league 2013",
  * searchBubbles method will be called with Optional.of("Winner league 2013"); 
  *
  * Optional the searchBubbles() method could be annotated with @Timed, Dropwizard automatically records the duration and rate
@@ -51,50 +51,22 @@ public class BubbleEndPointResource {
 
 	static Logger logger = Logger.getLogger(BubbleEndPointResource.class);
 	
-	//private final String template;
-    private BubbleEngine bubbleEngine;
-    
-    //google client dependence
-    private final GoogleClient googleClient;
-    
-    //textAlytics client dependence
-    private final TextAlyticsClient textAlyticsClient;
-    
-    //textAlytics rekevance
-    private double textAlyticsRelevance;
-    
-    //amount of result to process (10 per query)
-    private int queriesToProcess;
-    
-    //afc client
-    private final AfcClient afcClient;
+	private BubbleEngine bubbleEngine;
+	private BubbleEndPointConfiguation bubbleEndPointConfiguation;
+	private Environment environment;
 
-    public BubbleEndPointResource(GoogleClient googleClient, TextAlyticsClient textAlyticsClient, double textAlyticsRelevance, int queriesToProcess, AfcClient afcClient) {
-    	this.googleClient = googleClient;
-    	this.textAlyticsClient = textAlyticsClient;
-    	this.textAlyticsRelevance = textAlyticsRelevance;
-    	this.afcClient = afcClient;
-    	this.queriesToProcess = queriesToProcess;
+    public BubbleEndPointResource(BubbleEndPointConfiguation bubbleEndPointConfiguation, Environment environment) {
+    	this.bubbleEndPointConfiguation = bubbleEndPointConfiguation;
+    	this.environment = environment;
     }
     
-    public GoogleClient getGoogleClient() {
-		return googleClient;
+    
+	public BubbleEndPointConfiguation getBubbleEndPointConfiguation() {
+		return bubbleEndPointConfiguation;
 	}
-    
-    public TextAlyticsClient getTextAlyticsClient() {
-    	return textAlyticsClient;
-    }
-    
-    public double getTextAlyticsRelevance() {
-		return textAlyticsRelevance;
-	}
-    
-    public AfcClient getAfcClient() {
-    	return afcClient;
-    }
-    
-    public int getQueriesToProcess() {
-		return queriesToProcess;
+
+	public Environment getEnvironment() {
+		return environment;
 	}
 
 	/**
@@ -128,7 +100,7 @@ public class BubbleEndPointResource {
     	 */
     	try {
     		bubbleEngine = new BubbleEngine();
-    		return bubbleEngine.workflowEngine(textFilter, googleClient, textAlyticsClient, textAlyticsRelevance, afcClient, queriesToProcess);
+    		return bubbleEngine.workflowEngine(textFilter, this.bubbleEndPointConfiguation, this.environment);
         }
     	catch(WebApplicationException webApplicationException) {
     		logger.error("Exception on searchBubble. Status response: "+webApplicationException.getResponse().getStatus());

@@ -17,7 +17,7 @@ import es.uned.epardo30.bubbleend.externalresource.afc.dto.LatticeDto;
 /**
  * 
  * Unit test for MapperAfcXmlToDto
- * We are testing the mapping between the xml file which is got from TextAlytics service toward LatticeDto which will be returned to bubble_GUI
+ * We are testing the mapping between the xml file which is got from Afc service toward LatticeDto which will be returned to bubble_GUI
  * 
  * @author eduardo.guillen
  *

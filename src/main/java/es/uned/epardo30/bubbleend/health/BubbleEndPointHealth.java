@@ -10,7 +10,7 @@ import es.uned.epardo30.bubbleend.resources.BubbleEndPointResource;
 
 /**
  * Check the correct status of Bubble end point service. 
- *  We simulate the workflow calling the workflowEngine method. Previously, we've inserted the dependencies (clients web and search text filter)
+ *  We simulate the workflow calling the workflowEngine method.
  * 	
  * This testing method is provided by dropwizard framework in order to check the deployed resource on the service. In our case, we just publish one 
  * resource, "bubble search" therefore we have one health check. This method is not a unit test, due to we are not testing the internal code, but
@@ -40,9 +40,7 @@ public class BubbleEndPointHealth extends HealthCheck {
 		BubbleEngine bubbleEngine = new BubbleEngine();
 		try {
 			logger.debug("checking external resource google service search");
-			bubbleEngine.workflowEngine("universidad uned", bubbleEndPointResource.getGoogleClient(), 
-										 bubbleEndPointResource.getTextAlyticsClient(), bubbleEndPointResource.getTextAlyticsRelevance(),
-										 bubbleEndPointResource.getAfcClient(), bubbleEndPointResource.getQueriesToProcess());
+			bubbleEngine.workflowEngine("universidad uned", bubbleEndPointResource.getBubbleEndPointConfiguation(), bubbleEndPointResource.getEnvironment());
 			
 			logger.debug("Health Check completed!!!");
 	        return Result.healthy();	

@@ -2,18 +2,13 @@ package es.uned.epardo30.bubbleend;
 
 import org.apache.log4j.Logger;
 
-import com.sun.jersey.api.client.Client;
 import com.yammer.dropwizard.Service;
-import com.yammer.dropwizard.client.JerseyClientBuilder;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.config.FilterBuilder;
 
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
-import es.uned.epardo30.bubbleend.externalresource.afc.core.AfcClient;
-import es.uned.epardo30.bubbleend.externalresource.goggle.core.GoogleClient;
-import es.uned.epardo30.bubbleend.externalresource.textalytics.core.TextAlyticsClient;
 import es.uned.epardo30.bubbleend.health.BubbleEndPointHealth;
 import es.uned.epardo30.bubbleend.resources.BubbleEndPointResource;
 
@@ -64,32 +59,11 @@ public class BubbleEndPointService extends Service<BubbleEndPointConfiguation> {
     	final FilterBuilder fconfig = environment.addFilter(CrossOriginFilter.class, "/admin");
         fconfig.setInitParam(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
 
+    	logger.debug("Adding Bubble resource...");
+        environment.addResource(new BubbleEndPointResource(configuration, environment));
     	
-        logger.debug("Creating client jersey to connect to external resources...");
-        final Client client = new JerseyClientBuilder().using(configuration.getJerseyClientConfiguration()).using(environment).build();
-        
-        
-        logger.debug("Creating google client...");
-        final GoogleClient goggleClient = new GoogleClient(client, configuration.getGoogleResourceIp(), configuration.getGoogleResourcePort(), configuration.getGoogleApiKey(), 
-        											 configuration.getGoogleSearchEngineId(), configuration.getGoogleResourceProtocol(), configuration.getGoogleResourceContext());
-        
-        logger.debug("Creating textAlytics client...");
-        final TextAlyticsClient textAlyticsClient = new TextAlyticsClient(client, configuration.getTextalyticsResourceIp(),
-        																  configuration.getTextalyticsResourcePort(),
-        																  configuration.getTextalyticsKey(),
-        																  configuration.getTextalyticsResourceProtocol(),
-        																  configuration.getTextalyticsResourceContext(),
-        																  configuration.getTextalyticsLanguage());
-        
-        logger.debug("Creating afc client...");
-        final AfcClient afcClient = new AfcClient(client, configuration.getAfcResourceIp(), configuration.getAfcResourcePort(), configuration.getAfcResourceProtocol(), configuration.getAfcResourceContext());
-        
-        logger.debug("Adding Bubble resource...");
-        environment.addResource(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance(), configuration.getQueriesToProcess(), afcClient));
-    	
-        
         logger.debug("Running the health checking...");
-        environment.addHealthCheck(new BubbleEndPointHealth(new BubbleEndPointResource(goggleClient, textAlyticsClient, configuration.getTextalyticsRelevance(), configuration.getQueriesToProcess(), afcClient)));
+        environment.addHealthCheck(new BubbleEndPointHealth(new BubbleEndPointResource(configuration, environment)));
     	
     	logger.debug("add filter to environment modifying the original paramters...");
     	environment.addFilter(CrossOriginFilter.class, "*").setInitParam("allowedOrigins", "*").setInitParam("allowedMethods", "GET,POST,DELETE,PUT,HEAD").setInitParam("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
