@@ -66,13 +66,18 @@ public class TextAlyticsClient {
 	 * @return String : Return String which contains the xml response from textalytics service
 	 * @throws UnsupportedEncodingException
 	 */
-	public String getResource(String inputText) throws UnsupportedEncodingException {
+	public String getResource(String inputText, String languageSearch) throws UnsupportedEncodingException {
 		
 		logger.debug("TextAlyticsClient.getResource()...");
 		
+		//language
+		String lr = "";
+		if(languageSearch.equals("spa")) lr = "es";
+		else if(languageSearch.equals("eng")) lr = "en";
+		
 		String inputTextEncode = URLEncoder.encode(inputText, "UTF-8");
 		String url = this.textAlyticsProtocol+"://"+this.host+":"+this.port+this.textAlyticsContext+"?"
-				+ "key="+this.textalyticsKey+"&lang="+this.textAlyticsLanguage+"&mode=sa&tt=e&"
+				+ "key="+this.textalyticsKey+"&lang="+lr+"&mode=sa&tt=e&"
 				+ "dic=chetsdpqr&of=xml&txt="+inputTextEncode+"&txtf=plain&url=&_tte=e&_ttc=c&dm=5&cont=&ud=";
 		
 		logger.debug("url service textalytics: "+url);

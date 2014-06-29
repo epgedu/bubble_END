@@ -88,10 +88,11 @@ public class BubbleEndPointResource {
      * from searchBubble() because all process is executed on BubbbleEngine class.   
      */
     @POST
-    public LatticeDto searchBubbles(@FormParam("text-filter") String textFilter) {
+    public LatticeDto searchBubbles(@FormParam("text-filter") String textFilter, @FormParam("language-search") String languageSearch) {
     	
     	logger.debug("calling searchBubbles() method...");
     	logger.debug("Text filter: "+textFilter);
+    	logger.debug("Language Search: "+languageSearch);
     	
     	/* We need to call to bubble engine. We create a new instance of BubbleEngine for each request.
     	 * We don't need to manage user session, therefore we open a new BubbleEngine when we receive a
@@ -100,7 +101,7 @@ public class BubbleEndPointResource {
     	 */
     	try {
     		bubbleEngine = new BubbleEngine();
-    		return bubbleEngine.workflowEngine(textFilter, this.bubbleEndPointConfiguation, this.environment);
+    		return bubbleEngine.workflowEngine(textFilter, languageSearch, this.bubbleEndPointConfiguation, this.environment);
         }
     	catch(WebApplicationException webApplicationException) {
     		logger.error("Exception on searchBubble. Status response: "+webApplicationException.getResponse().getStatus());

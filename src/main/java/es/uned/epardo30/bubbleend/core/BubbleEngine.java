@@ -74,18 +74,18 @@ public class BubbleEngine {
 	 * @param environment
 	 * @return LatticeDto
 	 */
-	public LatticeDto workflowEngine(String textSearchFilter, BubbleEndPointConfiguation configuration, Environment environment) {
+	public LatticeDto workflowEngine(String textSearchFilter, String languageSearch, BubbleEndPointConfiguation configuration, Environment environment) {
 		logger.debug("Initializing workflowEngine...");
 		
 		this.createClients(configuration, environment);
 		
-		ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter, configuration.getQueriesToProcess());
+		ResultsGoogleDto resultsGoogleDto = this.callToGoogleClient(googleClient, textSearchFilter, languageSearch, configuration.getQueriesToProcess());
 		if(resultsGoogleDto.getItemsGoogleDto().isEmpty()) {
 			logger.debug("Return empty lattice");
 			return new LatticeDto();
 		}
 		else {
-			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, configuration.getTextalyticsRelevance(), configuration.getQueriesToProcess());
+			ResultsTextAlyticsDto resultsTextAlyticsDto = this.callTextalyticsProcess(resultsGoogleDto, textAlyticsClient, configuration.getTextalyticsRelevance(), configuration.getQueriesToProcess(), languageSearch);
 			LatticeDto latticeDto = this.callToAfcClient(resultsGoogleDto, resultsTextAlyticsDto, afcClient, configuration.getQueriesToProcess());
 			return latticeDto;
 		}
@@ -106,7 +106,7 @@ public class BubbleEngine {
         
         logger.debug("Creating google client...");
         googleClient = new GoogleClient(client, configuration.getGoogleResourceIp(), configuration.getGoogleResourcePort(), configuration.getGoogleApiKey(), 
-        											 configuration.getGoogleSearchEngineId(), configuration.getGoogleResourceProtocol(), configuration.getGoogleResourceContext());
+        											 configuration.getGoogleSearchEngineId(), configuration.getGoogleResourceProtocol(), configuration.getGoogleResourceContext(), configuration.getGoogleSearchEngineIdEng());
         
         logger.debug("Creating textAlytics client...");
         textAlyticsClient = new TextAlyticsClient(client, configuration.getTextalyticsResourceIp(),
@@ -130,7 +130,7 @@ public class BubbleEngine {
 	 * @param textSearchFilter
 	 * @return ResultsGoogleDto
 	 */
-	private ResultsGoogleDto callToGoogleClient(GoogleClient googleClient, String textSearchFilter, int queriesToProcess) {
+	private ResultsGoogleDto callToGoogleClient(GoogleClient googleClient, String textSearchFilter, String languageSearch, int queriesToProcess) {
 		//calling to resources.GoogleClient service
 		MapperGoogleJsonToDto mapperGoogleJsonToDto = new MapperGoogleJsonToDto();
 		JSONObject googleResponse = null;
@@ -140,7 +140,7 @@ public class BubbleEngine {
 			logger.debug("BubbleEngine.CallToGoogleClient()...");
 			for(int i = 0; i < queriesToProcess; i++) {
 				try {
-					googleResponse = googleClient.getResource(textSearchFilter, i);
+					googleResponse = googleClient.getResource(textSearchFilter, languageSearch, i);
 					mapperGoogleJsonToDto.map(googleResponse, resultsGoogleDto);
 				}
 				catch(ClientHandlerException clientHandlerException) {
@@ -197,7 +197,7 @@ public class BubbleEngine {
 	 * @param resultsGoogleDto
 	 * @param textAlyticsClient 
 	 */
-	public ResultsTextAlyticsDto callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto, TextAlyticsClient textAlyticsClient, double relevanceConf, int queriesToProcess) {
+	public ResultsTextAlyticsDto callTextalyticsProcess(ResultsGoogleDto resultsGoogleDto, TextAlyticsClient textAlyticsClient, double relevanceConf, int queriesToProcess, String languageSearch) {
 		logger.debug("BubbleEngine.callTextalyticsProcess");
 		ItemGoogleDto item;
 		String textToSend;
@@ -233,7 +233,7 @@ public class BubbleEngine {
 					//if text to process is not empty for this object
 					//call the textAlytics service
 					try {
-						String response = textAlyticsClient.getResource(textToSend);
+						String response = textAlyticsClient.getResource(textToSend, languageSearch);
 						//process the textAlytics response
 						logger.debug("Proccesing attributes for object: "+item.getTitle());
 						mapperTextAlyticsXmlToDto.map(response, resultsTextAlyticsDto, i+1, relevanceConf);

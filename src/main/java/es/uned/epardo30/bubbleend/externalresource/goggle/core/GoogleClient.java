@@ -27,6 +27,7 @@ public class GoogleClient {
 	private int port;
 	private String googleApiKey;
 	private String googleSearchEngineId;
+	private String googleSearchEngineIdEng;
 	private String googleResourceProtocol;
 	private String googleResourceContext;
 	
@@ -43,13 +44,14 @@ public class GoogleClient {
 	 * 
 	 * @see es.uned.epardo30.bubbleend.BubbleEndPointService
 	 */
-	public GoogleClient(Client client, String host, int port, String googleApiKey, String googleSearchEngineId, String googleResourceProtocol, String googleResourceContext) {
+	public GoogleClient(Client client, String host, int port, String googleApiKey, String googleSearchEngineId, String googleResourceProtocol, String googleResourceContext, String googleSearchEngineIdEng) {
 		
 		logger.debug("Initializing google client...");
 		logger.debug("ip google service: "+host);
 		logger.debug("port google service: "+port);
 		logger.debug("google api key: "+googleApiKey);
 		logger.debug("google search engine: "+googleSearchEngineId);
+		logger.debug("google search engine English: "+googleSearchEngineIdEng);
 		logger.debug("protocol google service: "+googleResourceProtocol);
 		logger.debug("context google service: "+googleResourceContext);
 		
@@ -60,6 +62,7 @@ public class GoogleClient {
 		this.googleSearchEngineId = googleSearchEngineId;
 		this.googleResourceProtocol = googleResourceProtocol;
 		this.googleResourceContext = googleResourceContext;
+		this.googleSearchEngineIdEng = googleSearchEngineIdEng;
 	}
 	
 	/**
@@ -67,7 +70,7 @@ public class GoogleClient {
 	 * @param textSearchFilter : The text was inserted by user and it's sent from bubble_GUI
 	 * @return JSONObject : Object contains the google results
 	 */
-	public JSONObject getResource(String textSearchFilter, int initPage) throws SocketTimeoutException{
+	public JSONObject getResource(String textSearchFilter, String languageSearch, int initPage) throws SocketTimeoutException{
 		logger.debug("Google.client.getResource()...");
 		client.setConnectTimeout(100000);
 		client.setReadTimeout(100000);
@@ -78,7 +81,12 @@ public class GoogleClient {
 		//start result list
 		int start = (initPage * 10) + 1;//10 results per query. Always beginning by 1. https://support.google.com/customsearch/answer/1361951?hl=en
 		
-		String url = this.googleResourceProtocol+"://"+this.host+":"+this.port+this.googleResourceContext+"?key="+this.googleApiKey+"&cx="+this.googleSearchEngineId+"&q="+textSearchFilter+"&start="+start;
+		//language
+		String engineId ="";
+		if(languageSearch.equals("spa")) engineId = this.googleSearchEngineId;
+		else if(languageSearch.equals("eng")) engineId = this.googleSearchEngineIdEng;
+		
+		String url = this.googleResourceProtocol+"://"+this.host+":"+this.port+this.googleResourceContext+"?key="+this.googleApiKey+"&cx="+engineId+"&q="+textSearchFilter+"&start="+start;
 		logger.debug("url service google: "+url);
 		
 		//process the response

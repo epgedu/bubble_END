@@ -79,6 +79,9 @@ public class BubbleEndPointConfiguation extends Configuration{
 	private String googleSearchEngineId;
 	
 	@NotEmpty
+	private String googleSearchEngineIdEng;
+	
+	@NotEmpty
 	private String googleApiKey;
 	
 	@NotEmpty
@@ -193,6 +196,16 @@ public class BubbleEndPointConfiguation extends Configuration{
 	@JsonProperty
 	public void setGoogleSearchEngineId(String googleSearchEngineId) {
 		this.googleSearchEngineId = googleSearchEngineId;
+	}
+	
+	@JsonProperty
+	public String getGoogleSearchEngineIdEng() {
+		return googleSearchEngineIdEng;
+	}
+
+	@JsonProperty
+	public void setGoogleSearchEngineIdEng(String googleSearchEngineIdEng) {
+		this.googleSearchEngineIdEng = googleSearchEngineIdEng;
 	}
 
 	@JsonProperty

@@ -40,7 +40,7 @@ public class BubbleEndPointHealth extends HealthCheck {
 		BubbleEngine bubbleEngine = new BubbleEngine();
 		try {
 			logger.debug("checking external resource google service search");
-			bubbleEngine.workflowEngine("universidad uned", bubbleEndPointResource.getBubbleEndPointConfiguation(), bubbleEndPointResource.getEnvironment());
+			bubbleEngine.workflowEngine("universidad uned", "spa", bubbleEndPointResource.getBubbleEndPointConfiguation(), bubbleEndPointResource.getEnvironment());
 			
 			logger.debug("Health Check completed!!!");
 	        return Result.healthy();	
